@@ -1,9 +1,10 @@
-import './App.css';
-// Public Pages
+import "./App.css";
+
 function App() {
   return (
-    <div/>
+    <>
+      <div></div>
+    </>
   );
 }
-
 export default App;
