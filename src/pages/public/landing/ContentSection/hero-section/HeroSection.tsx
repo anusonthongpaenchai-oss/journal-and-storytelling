@@ -1,6 +1,6 @@
 import hirker from '@/assets/landing/hero-section/hiker.jpg'
 
-function DesktopHeroHighlight() {
+function DesktopHeroSection() {
   return (
     <div
       className="
@@ -83,7 +83,7 @@ function DesktopHeroHighlight() {
   );
 }
 
-function MobileHeroHighlight() {
+function MobileHeroSection() {
   return (
     <div
       className="
@@ -163,13 +163,13 @@ function MobileHeroHighlight() {
   );
 }
 
-function HeroHighlight() {
+function HeroSection() {
   return (
     <>
-      <DesktopHeroHighlight />
-      <MobileHeroHighlight />
+      <DesktopHeroSection />
+      <MobileHeroSection />
     </>
   );
 }
 
-export default HeroHighlight;
+export default HeroSection;

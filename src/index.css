@@ -147,6 +147,11 @@
     font-size: var(--font-size-body-2);
     font-weight: var(--font-weight-body);
   }
+
+  .placeholder-body-1::placeholder {
+    font-size: var(--font-size-body-1);
+    font-weight: var(--font-weight-body);
+  }
 }
 
 @layer utilities {

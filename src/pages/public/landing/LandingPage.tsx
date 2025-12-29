@@ -1,12 +1,12 @@
 import NavbarPublic from "@/components/layout/NavbarPublic";
-import HeroSection from "./hero-section/Herosection";
+import ContentSection from "./ContentSection/contet-section/ContentSection";
 
 function LandingPage() {
   return (
     <>
       <div>
         <NavbarPublic />
-        <HeroSection />
+        <ContentSection />
       </div>
     </>
   );
