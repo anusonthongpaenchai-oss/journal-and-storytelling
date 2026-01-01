@@ -1,5 +1,6 @@
 import NavbarPublic from "@/components/layout/NavbarPublic";
-import ContentSection from "./ContentSection/contet-section/ContentSection";
+import ContentSection from "./ContentSection/ContentSection";
+import Footer from "@/components/layout/Footer";
 
 function LandingPage() {
   return (
@@ -7,6 +8,7 @@ function LandingPage() {
       <div>
         <NavbarPublic />
         <ContentSection />
+        <Footer/>
       </div>
     </>
   );

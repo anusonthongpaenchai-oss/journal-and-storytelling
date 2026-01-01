@@ -1,45 +1,45 @@
-import { Github } from "lucide-react";
-import { Linkedin } from "lucide-react";
-import { Mail } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
+import { SectionLinkButton } from "../ui/SectionLink";
 
 function DesktopFooter() {
   return (
     <div
       className="
               hidden
-              md:flex flex-row justify-between
+              md:flex flex-row justify-between items-center
               px-[120px] py-[60px]
               bg-brown-200"
     >
       {/* Cornor Left */}
       <div
         className="
-      flex flex-row
-      gap-[24px]"
+      flex flex-row items-center
+      gap-[24px] h-[24px]
+      "
       >
         {/* Text */}
-        <h3 className="text-body-1 text-brown-500">Get in touch</h3>
+        <div className="flex flex-row justify-center items-center">
+          <span className="text-body-1 text-brown-500">Get in touch</span>
+        </div>
 
         {/* Icon */}
-        <div className="flex gap-[16px]">
-          <button type="button">
+        <div className="flex flex-row gap-[16px] ">
+          <a href="#">
             <Linkedin />
-          </button>
+          </a>
 
-          <button type="button">
+          <a href="#">
             <Github />
-          </button>
+          </a>
 
-          <button type="button">
+          <a href="#">
             <Mail />
-          </button>
+          </a>
         </div>
       </div>
 
       {/* Cornor Right */}
-      <button type="button" className="text-body-1 text-brown-600 underline">
-        Home page
-      </button>
+      <SectionLinkButton label="Home page" href="#" />
     </div>
   );
 }
@@ -60,7 +60,9 @@ function MobileFooter() {
           gap-[24px]"
       >
         {/* Text */}
-        <h3 className="text-body-1 text-brown-500">Get in touch</h3>
+        <div className="flex flex-row justify-center items-center">
+          <span className="text-body-1 text-brown-500">Get in touch</span>
+        </div>
 
         {/* Icon */}
         <div className="flex gap-[16px]">
@@ -79,11 +81,7 @@ function MobileFooter() {
       </div>
 
       {/* Text bottom */}
-      <button type="button" 
-        className="text-body-1 text-brown-600 underline"
-      >
-        Home page
-      </button>
+      <SectionLinkButton label="Home page" href="#" />
     </div>
   );
 }

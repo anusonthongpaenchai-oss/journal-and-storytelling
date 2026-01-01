@@ -6,26 +6,33 @@ function DesktopNav() {
   return (
     <nav
       className="
-        hidden sticky
-        top-0 left-0 z-50
-        md:flex  flex-row
-        justify-between items-center
-        px-[120px] py-[16px]
-        w-auto
-        bg-brown-100
-        border-b border-brown-300
-      "
+    hidden md:flex flex-row
+    sticky top-0 left-0 z-50
+    justify-between items-center
+    px-[120px] py-[16px]
+    w-auto
+    bg-brown-100
+    border-b border-brown-300
+  "
     >
-      {/* Logo */}
-      <img src={logo} alt="Logo" width="48px" />
+      {/* Desktop Navigation Bar */}
+      {/* - Sticky top navigation for desktop view */}
+      {/* - Contains logo and authentication actions */}
 
-      {/* Login, SignUp */}
+      {/* Logo Section */}
+      <a href="#">
+        <img src={logo} alt="Logo" width="48px" />
+      </a>
+
+      {/* Auth Actions */}
+      {/* - Login and Sign Up buttons grouped together */}
       <div
         className="
-          flex flex-row justify-between 
-          gap-[8px]
-          w-[276px]
-        "
+      flex flex-row
+      justify-between
+      gap-[8px]
+      w-[276px]
+    "
       >
         <LoginButton />
         <SignUpButton />
@@ -38,20 +45,26 @@ function MobileNav() {
   return (
     <nav
       className="
-        md:hidden sticky
-        top-0 left-0 z-50
-        flex flex-row
-        justify-between items-center
-        px-[24px] py-[12px]
-        w-full
-        bg-brown-100 
-        border-b border-brown-300
-    "
+    flex flex-row
+    md:hidden
+    sticky top-0 left-0 z-50
+    justify-between items-center
+    px-[24px] py-[12px]
+    w-full
+    bg-brown-100
+    border-b border-brown-300
+  "
     >
-      {/* Logo */}
-      <img src={logo} alt="Logo" width="24px" />
+      {/* Mobile Navigation Bar */}
+      {/* - Sticky top navigation for mobile view */}
+      {/* - Contains logo and hamburger menu */}
 
-      {/* Hamburger */}
+      {/* Logo */}
+      <a href="#">
+        <img src={logo} alt="Logo" width="24px" />
+      </a>
+
+      {/* Hamburger Menu Trigger */}
       <HamburgerPublic />
     </nav>
   );
@@ -60,7 +73,14 @@ function MobileNav() {
 function NavbarPublic() {
   return (
     <>
+      {/* Primary Navigation Wrapper */}
+      {/* - Renders desktop and mobile navigation variants */}
+      {/* - Visibility is controlled internally by responsive utilities */}
+
+      {/* Desktop Navigation */}
       <DesktopNav />
+
+      {/* Mobile Navigation */}
       <MobileNav />
     </>
   );
