@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 interface BlogCardProps {
   id: string;
   image: string;
@@ -31,8 +33,8 @@ export function BlogCardDesktop({
     >
       {/* Cover Image */}
       {/* - Clickable thumbnail linking to article detail */}
-      <a
-        href={`/article/${id}`}
+      <Link
+        to={`/article/${id}`}
         className="
           relative
           h-[360px]
@@ -47,7 +49,7 @@ export function BlogCardDesktop({
             rounded-[12px]
           "
         />
-      </a>
+      </Link>
 
       {/* Content */}
       {/* - Article information and metadata */}
@@ -72,7 +74,7 @@ export function BlogCardDesktop({
         </div>
 
         {/* Title */}
-        <a href={`/article/${id}`}>
+        <Link to={`/article/${id}`}>
           <h2
             className="
               text-headline-4
@@ -83,7 +85,7 @@ export function BlogCardDesktop({
           >
             {title}
           </h2>
-        </a>
+        </Link>
 
         {/* Description */}
         <p
@@ -156,8 +158,8 @@ export function BlogCardMobile({
       "
     >
       {/* Cover Image */}
-      <a
-        href={`/article/${id}`}
+      <Link
+        to={`/article/${id}`}
         className="
           relative
           h-[212px]
@@ -172,7 +174,7 @@ export function BlogCardMobile({
             rounded-[12px]
           "
         />
-      </a>
+      </Link>
 
       {/* Content */}
       <div
@@ -196,7 +198,7 @@ export function BlogCardMobile({
         </div>
 
         {/* Title */}
-        <a href={`/article/${id}`}>
+        <Link to={`/article/${id}`}>
           <h2
             className="
               text-headline-4
@@ -207,7 +209,7 @@ export function BlogCardMobile({
           >
             {title}
           </h2>
-        </a>
+        </Link>
 
         {/* Description */}
         <p
