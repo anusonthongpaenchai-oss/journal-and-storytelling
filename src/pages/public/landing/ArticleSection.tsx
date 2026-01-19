@@ -4,6 +4,9 @@ import { SearchControlsDesktop, SearchControlsMobile } from "./SearchControls";
 import { BlogCardDesktop, BlogCardMobile } from "@/components/layout/BlogCard";
 import { SectionLinkButton } from "@/components/ui/SectionLink";
 import { CircularProgress } from "@chakra-ui/react";
+import { formatDate } from "@/utils/FormatDate";
+import { usePostAutocomplete } from "@/hooks/usePostAutocomplete";
+import { useNavigate } from "react-router-dom";
 
 type Post = {
   id: string;
@@ -11,20 +14,11 @@ type Post = {
   category: string;
   title: string;
   description: string;
+  content: string;
   author: string;
   date: string;
   likes: number;
 };
-
-/* ================= Utils ================= */
-
-function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(dateString));
-}
 
 /* ================= Component ================= */
 
@@ -35,8 +29,10 @@ export default function ArticleSection() {
   const [selectedCategory, setSelectedCategory] = useState<string>("Highlight");
   const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { query, setQuery, suggestions } = usePostAutocomplete(posts);
+  const navigate = useNavigate();
 
-  const getData = async () => {
+  const getPost = async () => {
     try {
       if (isLoading) return;
 
@@ -55,7 +51,7 @@ export default function ArticleSection() {
   };
 
   useEffect(() => {
-    getData();
+    getPost();
   }, []);
 
   useEffect(() => {
@@ -90,6 +86,10 @@ export default function ArticleSection() {
           categories={categories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
+          query={query}
+          onQueryChange={setQuery}
+          suggestions={suggestions}
+          onSelectPost={(id) => navigate(`/post/${id}`)}
         />
 
         {/* Content */}
@@ -155,6 +155,10 @@ export default function ArticleSection() {
           categories={categories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
+          query={query}
+          onQueryChange={setQuery}
+          suggestions={suggestions}
+          onSelectPost={(id) => navigate(`/post/${id}`)}
         />
 
         {/* Content */}

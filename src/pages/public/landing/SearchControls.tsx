@@ -9,16 +9,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+
+type AutoCompleteItem = {
+  id: string;
+  title: string;
+};
+
 type Props = {
   categories: string[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
+  query: string;
+  onQueryChange: (value: string) => void;
+  suggestions: AutoCompleteItem[];
+  onSelectPost: (id: string) => void;
 };
 
+{/* ================= Desktop ================= */ }
 export function SearchControlsDesktop({
-  categories,  
+  categories,
   selectedCategory,
   onCategoryChange,
+  query,
+  onQueryChange,
+  suggestions,
+  onSelectPost,
 }: Props) {
   return (
     <section
@@ -42,7 +57,6 @@ export function SearchControlsDesktop({
       >
         {/* Category Tabs */}
         <div className="flex flex-row gap-[8px]">
-
           {categories.map((category) => {
             const isActive = selectedCategory === category;
 
@@ -51,33 +65,40 @@ export function SearchControlsDesktop({
                 key={category}
                 type="button"
                 onClick={() => onCategoryChange(category)}
-                className={`
+                className="
                   px-[20px] py-[12px]
                   text-body-1
                   rounded-[16px]
-                  ${
-                    isActive
-                      ? "bg-brown-300 text-brown-600"
-                      : "text-brown-500 hover:bg-brown-300"
-                  }
-                `}
+                "
               >
-                {category}
+                <span
+                  className={
+                    isActive
+                      ? "bg-brown-300 text-brown-600 px-[20px] py-[12px] rounded-[16px]"
+                      : "text-brown-500 hover:bg-brown-300 px-[20px] py-[12px] rounded-[16px]"
+                  }
+                >
+                  {category}
+                </span>
               </button>
             );
           })}
         </div>
 
+        {/* Search */}
         <div
           className="
             relative
-            w-[360px] h-[48px]
+            w-[360px]
+            h-[48px]
           "
         >
           <Input
             type="text"
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Search"
-            autoComplete="on"
+            autoComplete="off"
           />
 
           <button
@@ -92,17 +113,59 @@ export function SearchControlsDesktop({
           >
             <Search className="w-[24px] h-[24px]" />
           </button>
+
+          {/* Auto Complete */}
+          {suggestions.length > 0 && (
+            <div
+              className="
+                absolute
+                p-1
+                top-fdivl left-0
+                mt-[8px]
+                w-full
+                bg-white
+                border border-brown-200
+                rounded-[12px]
+                shadow-md
+                z-10
+              "
+            >
+              {suggestions.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelectPost(item.id)}
+                  className="
+                    px-[16px] py-[12px]
+                    text-start
+                    text-body-2
+                    text-brown-600 hover:text-brown-400
+                    hover:bg-brown-200
+                    hover:border
+                    hover:rounded-[12px]
+                    cursor-pointer
+                  "
+                >
+                  {item.title}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-
+{/* ================= Mobile ================= */ }
 export function SearchControlsMobile({
   categories,
   selectedCategory,
   onCategoryChange,
+  query,
+  onQueryChange,
+  suggestions,
+  onSelectPost,
 }: Props) {
   return (
     <section
@@ -133,13 +196,16 @@ export function SearchControlsMobile({
         <div
           className="
             relative
+            w-full
             h-[48px]
           "
         >
           <Input
             type="text"
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Search"
-            autoComplete="on"
+            autoComplete="off"
           />
 
           <button
@@ -154,6 +220,44 @@ export function SearchControlsMobile({
           >
             <Search className="w-[24px] h-[24px]" />
           </button>
+
+          {/* Auto Complete */}
+          {suggestions.length > 0 && (
+            <div
+              className="
+                absolute
+                p-1
+                top-fdivl left-0
+                mt-[8px]
+                w-full
+                bg-white
+                border border-brown-200
+                rounded-[12px]
+                shadow-md
+                z-10
+              "
+            >
+              {suggestions.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelectPost(item.id)}
+                  className="
+                    px-[16px] py-[12px]
+                    text-start
+                    text-body-2
+                    text-brown-600 hover:text-brown-400
+                    hover:bg-brown-200
+                    hover:border
+                    hover:rounded-[12px]
+                    cursor-pointer
+                  "
+                >
+                  {item.title}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Category */}
@@ -166,7 +270,6 @@ export function SearchControlsMobile({
         >
           <h3 className="text-body-1">Category</h3>
 
-          {/* Select (ของเดิมคุณ) */}
           <Select
             value={selectedCategory}
             onValueChange={onCategoryChange}

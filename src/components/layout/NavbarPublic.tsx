@@ -1,8 +1,13 @@
-import { LoginButton, SignUpButton } from "../ui/Button";
+import { Button } from "../ui/Button";
 import { HamburgerPublic } from "../ui/HamburgerButton";
 import logo from "@/assets/common/logo.png";
+import { Link } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 function DesktopNav() {
+
+  const navigate = useNavigate()
+
   return (
     <nav
       className="
@@ -20,9 +25,9 @@ function DesktopNav() {
       {/* - Contains logo and authentication actions */}
 
       {/* Logo Section */}
-      <a href="#">
+      <Link to={'/'}>
         <img src={logo} alt="Logo" width="48px" />
-      </a>
+      </Link>
 
       {/* Auth Actions */}
       {/* - Login and Sign Up buttons grouped together */}
@@ -34,8 +39,8 @@ function DesktopNav() {
       w-[276px]
     "
       >
-        <LoginButton />
-        <SignUpButton />
+        <Button label='Log in' variant="secondary" onClick={() => navigate('/')} />
+        <Button label='Sign up' variant="primary" onClick={() => navigate('/')}/>
       </div>
     </nav>
   );
@@ -60,9 +65,9 @@ function MobileNav() {
       {/* - Contains logo and hamburger menu */}
 
       {/* Logo */}
-      <a href="#">
+      <Link to={'/'}>
         <img src={logo} alt="Logo" width="24px" />
-      </a>
+      </Link>
 
       {/* Hamburger Menu Trigger */}
       <HamburgerPublic />
