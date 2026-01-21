@@ -25,11 +25,11 @@ type Post = {
 export default function ArticleSection() {
   const PAGE_SIZE: number = 6;
 
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[] | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("Highlight");
   const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { query, setQuery, suggestions } = usePostAutocomplete(posts);
+  const { query, setQuery, suggestions } = usePostAutocomplete(posts ?? []);
   const navigate = useNavigate();
 
   const getPost = async () => {
@@ -57,6 +57,24 @@ export default function ArticleSection() {
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [selectedCategory]);
+
+  if (!posts) {
+    return (
+        <div
+            className="
+            hidden
+            md:flex flex-col
+            items-center
+            gap-[12px]
+            py-[48px]
+        "
+        >
+            <CircularProgress isIndeterminate size="50px" color="gray.700" />
+            <span className="text-headline-4">Loading...</span>
+        </div>
+    )
+};
+
 
   /* ================= Derived Data ================= */
 
