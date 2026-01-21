@@ -34,7 +34,7 @@ export function BlogCardDesktop({
       {/* Cover Image */}
       {/* - Clickable thumbnail linking to article detail */}
       <Link
-        to={`/article/${id}`}
+        to={`/post/${id}`}
         className="
           relative
           h-[360px]
@@ -74,7 +74,7 @@ export function BlogCardDesktop({
         </div>
 
         {/* Title */}
-        <Link to={`/article/${id}`}>
+        <Link to={`/post/${id}`}>
           <h2
             className="
               text-headline-4
@@ -159,7 +159,7 @@ export function BlogCardMobile({
     >
       {/* Cover Image */}
       <Link
-        to={`/article/${id}`}
+        to={`/post/${id}`}
         className="
           relative
           h-[212px]
@@ -198,7 +198,7 @@ export function BlogCardMobile({
         </div>
 
         {/* Title */}
-        <Link to={`/article/${id}`}>
+        <Link to={`/post/${id}`}>
           <h2
             className="
               text-headline-4

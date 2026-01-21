@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { LoginButton, SignUpButton } from "./Button";
+import { Button } from "./Button";
+import { useNavigate } from "react-router-dom";
 
 export function HamburgerPublic() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate()
 
   return (
     <>
@@ -46,8 +48,8 @@ export function HamburgerPublic() {
               ${open ? "translate-x-0" : "-translate-x-full"}
             `}
         >
-          <LoginButton />
-          <SignUpButton />
+          <Button label='Log in' variant="secondary" onClick={() => navigate('/')} />
+          <Button label='Sign up' variant="primary" onClick={() => navigate('/')} />
         </aside>
       </div>
     </>

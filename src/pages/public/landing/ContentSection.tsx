@@ -1,5 +1,5 @@
-import HeroSection from "./hero-section/HeroSection";
-import ArticleSection from "./main-content/ArticleSection";
+import HeroSection from "./sections/hero/HeroSection";
+import ArticleSection from "./ArticleSection";
 
 function ContentSection() {
   return (

@@ -39,7 +39,7 @@ function DesktopFooter() {
       </div>
 
       {/* Cornor Right */}
-      <SectionLinkButton label="Home page" href="#" />
+      <SectionLinkButton label="Home page" href="/" />
     </div>
   );
 }

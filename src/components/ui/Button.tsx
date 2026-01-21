@@ -1,41 +1,60 @@
-export function LoginButton() {
-  return (
-    <button
-      type="button"
-      className="
-        w-full h-[48px]
-        text-body-1
-        bg-white
-        border border-brown-400 rounded-[999px]
-        hover:cursor-pointer
-        hover:text-brown-400
-        active:text-brown-500
-      "
-    >
-      {/* Secondary Action */}
-      {/* - Login action button */}
-      Log In
-    </button>
-  );
-}
+import type { ReactNode } from "react";
 
-export function SignUpButton() {
-  return (
-    <button
-      type="button"
-      className="
-        w-full h-[48px]
-        text-body-1
+type ButtonType = "button" | "submit" | "reset";
+
+type ButtonProps = {
+  label: ReactNode;
+  variant: "primary" | "secondary";
+  type?: ButtonType;
+  icon?: ReactNode;
+  width?: string;
+  onClick?: () => void;
+};
+
+export function Button({
+  label,
+  icon,
+  variant,
+  width = 'w-full',
+  type = "button",
+  onClick,
+}: ButtonProps) {
+  const baseClassName = `
+    ${width}
+    h-[48px]
+    text-body-1
+    rounded-[999px]
+    hover:cursor-pointer
+    flex
+    items-center justify-center
+  `;
+
+  const variantClassName =
+    variant === "primary"
+      ? `
         bg-brown-600 text-white
-        rounded-[999px]
-        hover:cursor-pointer
         hover:bg-brown-400
         active:bg-brown-500
-      "
+      `
+      : `
+        bg-white
+        border border-brown-400
+        hover:text-brown-400
+        active:text-brown-500
+      `;
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      className={`${baseClassName} ${variantClassName}`}
     >
-      {/* Primary Action */}
-      {/* - Sign up / main CTA button */}
-      Sign Up
+      <span className="flex items-center gap-[6px]">
+        <span className="flex items-center gap-[6px] leading-none">
+          {icon && <span className="flex items-center">{icon}</span>}
+          <span>{label}</span>
+        </span>
+      </span>
     </button>
   );
 }

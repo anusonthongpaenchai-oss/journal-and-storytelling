@@ -1,6 +1,6 @@
-import { HeroTextBlock } from "./hero-block/HeroTextBlock";
-import { HeroImage } from "./hero-block/HeroImage";
-import { HeroAuthorBlock } from "./hero-block/HeroAuthorBlock";
+import { HeroTextBlock } from "./HeroTextBlock";
+import { HeroImage } from "./HeroImage";
+import { HeroAuthorBlock } from "./HeroAuthorBlock";
 
 function DesktopHeroSection() {
   return (
