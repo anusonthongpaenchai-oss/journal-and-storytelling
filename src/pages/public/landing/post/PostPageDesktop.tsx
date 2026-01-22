@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Facebook, Linkedin, Twitter, Smile, Copy } from "lucide-react";
@@ -33,12 +33,11 @@ type Post = {
 };
 
 function PostPageDesktop() {
-    const [post, setPost] = useState<Post | null>(null);
+    const [posts, setPosts] = useState<Post | null>(null);
     const [showAuthGate, setShowAuthGate] = useState(false);
-    const [showToast, setShowToast] = useState(false);
+    const [isAlert, setIsAlert] = useState(false);
 
     const { id } = useParams();
-    const navigate = useNavigate();
 
     function requireAuth() {
         setShowAuthGate(true);
@@ -47,7 +46,7 @@ function PostPageDesktop() {
     const handleCopyLink = async () => {
         try {
             await navigator.clipboard.writeText(window.location.href);
-            setShowToast(true);
+            setIsAlert(true);
         } catch {
             alert("Copy failed");
         }
@@ -58,7 +57,7 @@ function PostPageDesktop() {
             const result = await axios.get(
                 `https://blog-post-project-api.vercel.app/posts/${id}`
             );
-            setPost(result.data);
+            setPosts(result.data);
         } catch (err) {
             alert(err);
         }
@@ -69,7 +68,7 @@ function PostPageDesktop() {
     }, []);
 
 
-    if (!post) {
+    if (!posts) {
         return (
             <div
                 className="
@@ -96,15 +95,15 @@ function PostPageDesktop() {
                 <div className="flex flex-col gap-[48px] px-[120px] pt-[60px] pb-[120px]">
                     {/* Hero Image */}
                     <img
-                        src={post.image}
-                        alt={post.title}
+                        src={posts.image}
+                        alt={posts.title}
                         className="
-              w-full
-              aspect-[16/9]
-              object-cover
-              lg:mt-[24px]
-              lg:rounded-2xl
-            "
+                        w-full
+                        aspect-[16/9]
+                        object-cover
+                        lg:mt-[24px]
+                        lg:rounded-2xl
+                    "
                     />
 
                     {/* ================= Content + Sidebar ================= */}
@@ -116,31 +115,31 @@ function PostPageDesktop() {
                                 <div className="flex items-center gap-[16px]">
                                     <span
                                         className="
-                      px-[12px] py-[4px]
-                      bg-brand-green-soft
-                      text-body-2 text-brand-green
-                      rounded-full
-                    "
+                                        px-[12px] py-[4px]
+                                        bg-brand-green-soft
+                                        text-body-2 text-brand-green
+                                        rounded-full
+                                    "
                                     >
-                                        {post.category}
+                                        {posts.category}
                                     </span>
 
                                     <span className="text-body-2 text-brown-400">
-                                        {formatDate(post.date)}
+                                        {formatDate(posts.date)}
                                     </span>
                                 </div>
 
                                 <h1 className="text-headline-2 lg:text-headline-1">
-                                    {post.title}
+                                    {posts.title}
                                 </h1>
                             </header>
 
                             {/* Article */}
                             <section className="flex flex-col gap-[24px]">
-                                <p className="text-body-1">{post.description}</p>
+                                <p className="text-body-1">{posts.description}</p>
 
                                 <div className="markdown">
-                                    <ReactMarkdown>{post.content}</ReactMarkdown>
+                                    <ReactMarkdown>{posts.content}</ReactMarkdown>
                                 </div>
                             </section>
 
@@ -157,7 +156,7 @@ function PostPageDesktop() {
                             >
                                 <div className="w-[135px]">
                                     <Button
-                                        label={post.likes}
+                                        label={posts.likes}
                                         icon={<Smile />}
                                         variant="secondary"
                                         onClick={requireAuth}
@@ -191,13 +190,13 @@ function PostPageDesktop() {
                                 </div>
                             </section>
 
-                            {/* Toast */}
-                            {showToast && (
+                            {/* Alert */}
+                            {isAlert && (
                                 <div className="fixed bottom-6 -right-44 z-50 -translate-x-1/2">
                                     <Alert
                                         title="Copied!"
                                         description="This article has been copied to your clipboard."
-                                        onClose={() => setShowToast(false)}
+                                        onClose={() => setIsAlert(false)}
                                     />
                                 </div>
                             )}
@@ -247,7 +246,7 @@ function PostPageDesktop() {
                         >
                             <AuthorCard
                                 avatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                                name={post.author}
+                                name={posts.author}
                                 bio="I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.
 
                                     When i’m not writing, I spends time volunteering at my local animal shelter, helping cats find loving homes."
@@ -258,7 +257,7 @@ function PostPageDesktop() {
             </main>
 
             {showAuthGate && (
-                <AuthGateModal onClose={() => setShowAuthGate(false)} to="/" />
+                <AuthGateModal onClose={() => setShowAuthGate(false)} to="/login" />
             )}
 
             <Footer />
