@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Facebook, Linkedin, Twitter, Smile, Copy } from "lucide-react";
@@ -35,9 +35,10 @@ type Post = {
 function PostPageMobile() {
     const [post, setPost] = useState<Post | null>(null);
     const [showAuthGate, setShowAuthGate] = useState(false);
-    const [isAlert, setIsAlert] = useState(false);
+    const [showToast, setShowToast] = useState(false);
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
     function requireAuth() {
         setShowAuthGate(true);
@@ -46,7 +47,7 @@ function PostPageMobile() {
     const handleCopyLink = async () => {
         try {
             await navigator.clipboard.writeText(window.location.href);
-            setIsAlert(true);
+            setShowToast(true);
         } catch {
             alert("Copy failed");
         }
@@ -172,12 +173,12 @@ function PostPageMobile() {
                 </section>
 
                 {/* Toast */}
-                {isAlert && (
+                {showToast && (
                     <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
                         <Alert
                             title="Copied!"
                             description="This article has been copied to your clipboard."
-                            onClose={() => setIsAlert(false)}
+                            onClose={() => setShowToast(false)}
                         />
                     </div>
                 )}
@@ -216,7 +217,7 @@ function PostPageMobile() {
             </main>
 
             {showAuthGate && (
-                <AuthGateModal onClose={() => setShowAuthGate(false)} to="/login" />
+                <AuthGateModal onClose={() => setShowAuthGate(false)} to="/" />
             )}
 
             <Footer />

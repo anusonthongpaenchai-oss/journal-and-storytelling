@@ -48,8 +48,8 @@ export function HamburgerPublic() {
               ${open ? "translate-x-0" : "-translate-x-full"}
             `}
         >
-          <Button label='Log in' variant="secondary" onClick={() => navigate('/login')} />
-          <Button label='Sign up' variant="primary" onClick={() => navigate('/signup')} />
+          <Button label='Log in' variant="secondary" onClick={() => navigate('/')} />
+          <Button label='Sign up' variant="primary" onClick={() => navigate('/')} />
         </aside>
       </div>
     </>

@@ -15,7 +15,7 @@ function DesktopNav() {
     sticky top-0 left-0 z-50
     justify-between items-center
     px-[120px] py-[16px]
-    w-full
+    w-auto
     bg-brown-100
     border-b border-brown-300
   "
@@ -39,8 +39,8 @@ function DesktopNav() {
       w-[276px]
     "
       >
-        <Button label='Log in' variant="secondary" onClick={() => navigate('/login')} />
-        <Button label='Sign up' variant="primary" onClick={() => navigate('/signup')}/>
+        <Button label='Log in' variant="secondary" onClick={() => navigate('/')} />
+        <Button label='Sign up' variant="primary" onClick={() => navigate('/')}/>
       </div>
     </nav>
   );

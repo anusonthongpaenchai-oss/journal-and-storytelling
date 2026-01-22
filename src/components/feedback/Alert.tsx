@@ -1,16 +1,14 @@
-import { useEffect } from "react";
+type ToastVariant = "primary" | "secondary";
 import { X } from "lucide-react";
-
-type AlertVariant = "primary" | "secondary";
 
 type AlertProps = {
     title: string;
     description: string;
-    variant?: AlertVariant;
+    variant?: ToastVariant;
     onClose: () => void;
 };
 
-const VARIANT_STYLES: Record<AlertVariant, string> = {
+const VARIANT_STYLES: Record<ToastVariant, string> = {
     primary: "bg-brand-green text-white",
     secondary: "bg-brand-red text-white",
 };
@@ -21,29 +19,24 @@ export function Alert({
     variant = "primary",
     onClose,
 }: AlertProps) {
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            onClose();
-        }, 3000);
-
-        return () => {
-            clearTimeout(timeoutId);
-        };
-    }, [onClose]);
-
     return (
         <div
             className={`
-                flex
-                gap-[12px]
-                p-[16px]
-                w-full
-                ${VARIANT_STYLES[variant]}
-                rounded-[8px]
-                shadow-[20px]
-            `}
+        flex
+        gap-[12px]
+        p-[16px]
+        w-full
+        ${VARIANT_STYLES[variant]}
+        rounded-[8px] shadow-[20px]
+      `}
         >
-            <div className="flex flex-col gap-[4px]">
+            <div
+                className="
+          flex
+          flex-col
+          gap-[4px]
+        "
+            >
                 <span className="text-headline-4">
                     {title}
                 </span>
@@ -56,15 +49,15 @@ export function Alert({
                 type="button"
                 onClick={onClose}
                 className="
-                    flex
-                    items-center justify-center
-                    w-6 h-6
-                    text-white/80
-                    hover:text-white
-                "
+          flex
+          items-center justify-center
+          w-6 h-6
+          text-white/80
+          hover:text-white
+        "
                 aria-label="Close notification"
             >
-                <X />
+                < X />
             </button>
         </div>
     );

@@ -8,7 +8,6 @@ type ButtonProps = {
   type?: ButtonType;
   icon?: ReactNode;
   width?: string;
-  form?: string;
   onClick?: () => void;
 };
 
@@ -18,7 +17,6 @@ export function Button({
   variant,
   width = 'w-full',
   type = "button",
-  form,
   onClick,
 }: ButtonProps) {
   const baseClassName = `
@@ -47,7 +45,6 @@ export function Button({
 
   return (
     <button
-      form={form}
       type={type}
       onClick={onClick}
       className={`${baseClassName} ${variantClassName}`}

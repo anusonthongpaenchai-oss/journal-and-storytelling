@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type Post = {
   id: string;
@@ -8,11 +8,13 @@ type Post = {
 export function usePostAutocomplete(posts: Post[]) {
   const [query, setQuery] = useState("");
 
-  const suggestions = !query.trim()
-    ? []
-    : posts.filter((post) =>
-        post.title.toLowerCase().includes(query.toLowerCase())
-      );
+  const suggestions = useMemo(() => {
+    if (!query.trim()) return [];
+
+    return posts.filter((post) =>
+      post.title.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [posts, query]);
 
   return {
     query,
