@@ -144,6 +144,12 @@
     font-weight: var(--font-weight-body);
   }
 
+  
+  .text-body-3 {
+    font-size: var(--font-size-body-3);
+    font-weight: var(--font-weight-body);
+  }
+
   .text-body-2 {
     font-size: var(--font-size-body-2);
     font-weight: var(--font-weight-body);

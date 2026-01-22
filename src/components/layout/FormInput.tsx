@@ -16,7 +16,7 @@ const VARIANT_CLASSES: Record<InputVariant, string> = {
 };
 
 
-export function FormInput({
+export function  FormInput({
   label,
   type = "text",
   placeholder,

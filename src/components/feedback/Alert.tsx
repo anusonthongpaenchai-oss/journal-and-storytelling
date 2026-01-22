@@ -7,6 +7,7 @@ type AlertProps = {
     title: string;
     description: string;
     variant?: AlertVariant;
+    timeout?: number;
     onClose: () => void;
 };
 
@@ -19,17 +20,20 @@ export function Alert({
     title,
     description,
     variant = "primary",
+    timeout,
     onClose,
 }: AlertProps) {
-    useEffect(() => {
+    useEffect (() => {
+        if (!timeout) return;
+
         const timeoutId = setTimeout(() => {
-            onClose();
-        }, 3000);
+            onClose()
+        }, timeout)
 
         return () => {
-            clearTimeout(timeoutId);
-        };
-    }, [onClose]);
+            clearTimeout(timeoutId)
+        }
+    }, [timeout, onClose])
 
     return (
         <div

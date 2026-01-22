@@ -9,6 +9,7 @@ type ButtonProps = {
   icon?: ReactNode;
   width?: string;
   form?: string;
+  disabled?: boolean;
   onClick?: () => void;
 };
 
@@ -19,6 +20,7 @@ export function Button({
   width = 'w-full',
   type = "button",
   form,
+  disabled,
   onClick,
 }: ButtonProps) {
   const baseClassName = `
@@ -45,12 +47,19 @@ export function Button({
         active:text-brown-500
       `;
 
+  const disabledClassName = `
+      opacity-50
+      cursor-not-allowed
+      pointer-events-none
+    `;
+
   return (
     <button
       form={form}
       type={type}
       onClick={onClick}
-      className={`${baseClassName} ${variantClassName}`}
+      className={`${baseClassName} ${variantClassName} ${disabled && disabledClassName}`}
+      disabled={disabled}
     >
       <span className="flex items-center gap-[6px]">
         <span className="flex items-center gap-[6px] leading-none">
