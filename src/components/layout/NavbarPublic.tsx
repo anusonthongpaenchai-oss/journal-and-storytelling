@@ -2,12 +2,13 @@ import { Button } from "../ui/Button";
 import { HamburgerPublic } from "../ui/HamburgerButton";
 import logo from "@/assets/common/logo.png";
 import { Link } from 'react-router-dom'
-import { useNavigate } from "react-router-dom";
 
-function DesktopNav() {
+type PublicNavActions = {
+  onLogin?: () => void;
+  onSignUp?: () => void;
+};
 
-  const navigate = useNavigate()
-
+function DesktopNav({ onLogin, onSignUp }: PublicNavActions) {
   return (
     <nav
       className="
@@ -39,14 +40,14 @@ function DesktopNav() {
       w-[276px]
     "
       >
-        <Button label='Log in' variant="secondary" onClick={() => navigate('/')} />
-        <Button label='Sign up' variant="primary" onClick={() => navigate('/')}/>
+        <Button label='Log in' variant="secondary" onClick={onLogin} />
+        <Button label='Sign up' variant="primary" onClick={onSignUp}/>
       </div>
     </nav>
   );
 }
 
-function MobileNav() {
+function MobileNav({ onLogin, onSignUp }: PublicNavActions) {
   return (
     <nav
       className="
@@ -70,23 +71,20 @@ function MobileNav() {
       </Link>
 
       {/* Hamburger Menu Trigger */}
-      <HamburgerPublic />
+      <HamburgerPublic onLogin={onLogin} onSignUp={onSignUp}/>
     </nav>
   );
 }
 
-function NavbarPublic() {
+function NavbarPublic({ onLogin, onSignUp }: PublicNavActions) {
   return (
     <>
       {/* Primary Navigation Wrapper */}
-      {/* - Renders desktop and mobile navigation variants */}
-      {/* - Visibility is controlled internally by responsive utilities */}
-
       {/* Desktop Navigation */}
-      <DesktopNav />
+      <DesktopNav onLogin={onLogin} onSignUp={onSignUp} />
 
       {/* Mobile Navigation */}
-      <MobileNav />
+      <MobileNav onLogin={onLogin} onSignUp={onSignUp} />
     </>
   );
 }

@@ -1,14 +1,17 @@
-type ToastVariant = "primary" | "secondary";
+import { useEffect } from "react";
 import { X } from "lucide-react";
+
+type AlertVariant = "primary" | "secondary";
 
 type AlertProps = {
     title: string;
     description: string;
-    variant?: ToastVariant;
+    variant?: AlertVariant;
+    timeout?: number;
     onClose: () => void;
 };
 
-const VARIANT_STYLES: Record<ToastVariant, string> = {
+const VARIANT_STYLES: Record<AlertVariant, string> = {
     primary: "bg-brand-green text-white",
     secondary: "bg-brand-red text-white",
 };
@@ -17,8 +20,21 @@ export function Alert({
     title,
     description,
     variant = "primary",
+    timeout,
     onClose,
 }: AlertProps) {
+    useEffect (() => {
+        if (!timeout) return;
+
+        const timeoutId = setTimeout(() => {
+            onClose()
+        }, timeout)
+
+        return () => {
+            clearTimeout(timeoutId)
+        }
+    }, [timeout, onClose])
+
     return (
         <div
             className={`

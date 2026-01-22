@@ -1,13 +1,16 @@
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type AuthGateModalProps = {
-  to: string;
   onClose: () => void;
 };
 
-export function AuthGateModal({ to, onClose }: AuthGateModalProps) {
+export function AuthGateModal({ onClose }: AuthGateModalProps) {
+
+  const navigate = useNavigate()
+
   return (
     <div
       className="
@@ -64,12 +67,13 @@ export function AuthGateModal({ to, onClose }: AuthGateModalProps) {
             label="Create account"
             variant="primary"
             width="w-[207px]"
+            onClick={() => navigate('/signup')}
           />
 
           <p className="flex gap-[12px] text-body-1 text-brown-400">
             <span>Already have an account?</span>
             <Link
-              to={to}
+              to='/login'
               className="underline text-brown-600"
             >
               Log in
