@@ -38,16 +38,21 @@ export function Alert({
     return (
         <div
             className={`
-                flex
-                gap-[12px]
-                p-[16px]
-                w-full
-                ${VARIANT_STYLES[variant]}
-                rounded-[8px]
-                shadow-[20px]
-            `}
+        flex
+        gap-[12px]
+        p-[16px]
+        w-full
+        ${VARIANT_STYLES[variant]}
+        rounded-[8px] shadow-[20px]
+      `}
         >
-            <div className="flex flex-col gap-[4px]">
+            <div
+                className="
+          flex
+          flex-col
+          gap-[4px]
+        "
+            >
                 <span className="text-headline-4">
                     {title}
                 </span>
@@ -60,15 +65,15 @@ export function Alert({
                 type="button"
                 onClick={onClose}
                 className="
-                    flex
-                    items-center justify-center
-                    w-6 h-6
-                    text-white/80
-                    hover:text-white
-                "
+          flex
+          items-center justify-center
+          w-6 h-6
+          text-white/80
+          hover:text-white
+        "
                 aria-label="Close notification"
             >
-                <X />
+                < X />
             </button>
         </div>
     );

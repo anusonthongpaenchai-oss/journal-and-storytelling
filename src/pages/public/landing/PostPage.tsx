@@ -1,5 +1,5 @@
-import PostPageDesktop from "./PostPageDesktop";
-import PostPageMobile from "./PostPageMobile";
+import PostPageDesktop from "./post/PostPageDesktop";
+import PostPageMobile from "./post/PostPageMobile";
 
 function PostPage() {
     return (
@@ -13,4 +13,3 @@ function PostPage() {
 export default PostPage;
 
 
- 

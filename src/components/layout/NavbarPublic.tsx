@@ -16,7 +16,7 @@ function DesktopNav({ onLogin, onSignUp }: PublicNavActions) {
     sticky top-0 left-0 z-50
     justify-between items-center
     px-[120px] py-[16px]
-    w-full
+    w-auto
     bg-brown-100
     border-b border-brown-300
   "
