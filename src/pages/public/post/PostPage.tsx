@@ -1,5 +1,5 @@
-import PostPageDesktop from "./post/PostPageDesktop";
-import PostPageMobile from "./post/PostPageMobile";
+import PostPageDesktop from "./PostPageDesktop";
+import PostPageMobile from "./PostPageMobile";
 
 function PostPage() {
     return (
