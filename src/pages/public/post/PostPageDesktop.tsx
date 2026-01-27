@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { Facebook, Linkedin, Twitter, Smile, Copy } from "lucide-react";
 import { CircularProgress } from "@chakra-ui/react";
 
-import NavbarPublic from "@/components/layout/NavbarPublic";
+import PublicNavbar from "@/components/layout/PublicNavbar";
 import Footer from "@/components/layout/Footer";
 import { AuthorCard } from "@/components/layout/AuthorCard";
 import { AuthGateModal } from "@/components/layout/AuthGateModal";
@@ -13,7 +13,7 @@ import { AuthGateModal } from "@/components/layout/AuthGateModal";
 import { Button } from "@/components/ui/Button";
 import { SocialIconButton } from "@/components/ui/SocialIconButton";
 
-import { CommentBox } from "@/pages/public/landing/post/comment/CommentBox";
+import { CommentBox } from "./comment/CommentBox";
 import { CommentItem } from "./comment/CommentItem";
 
 import { Alert } from "@/components/feedback/Alert";
@@ -90,7 +90,7 @@ function PostPageDesktop() {
 
   return (
     <div className="hidden flex-col md:flex">
-      <NavbarPublic
+      <PublicNavbar
         onLogin={() =>
           navigate("/login", {
             state: { from: "post" },

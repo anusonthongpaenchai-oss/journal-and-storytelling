@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import NavbarPublic from "@/components/layout/NavbarPublic";
+import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/feedback/Alert";
 import { useBackNavigation } from "@/hooks/useBackNavigation";
+
+import { testAccount } from "@/lib/mocks/dataProfile";
 
 type FormErrors = {
   email?: boolean;
@@ -13,28 +15,28 @@ type FormErrors = {
 };
 
 function LogInPage() {
+  // ===== Form State =====
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAlert, setAlert] = useState(false);
-  const [isError, setIsError] = useState<FormErrors>({});
+
+  // ===== UI State =====
+  const [isAlert, setIsAlert] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isError, setIsError] = useState<FormErrors>({});
 
   const navigate = useNavigate();
   const { goBack } = useBackNavigation();
-
-  const emailTrue = "test@gmail.com";
-  const passwordTrue = "test001";
 
   // ===== Form Validation =====
   // Responsibility: validate credentials and update error state
   function validate(): boolean {
     const nextErrors: FormErrors = {};
 
-    if (email !== emailTrue) {
+    if (email !== testAccount.email) {
       nextErrors.email = true;
     }
 
-    if (password !== passwordTrue) {
+    if (password !== testAccount.password) {
       nextErrors.password = true;
     }
 
@@ -52,7 +54,7 @@ function LogInPage() {
     setIsSubmitting(true);
 
     if (!validate()) {
-      setAlert(true);
+      setIsAlert(true);
       setIsSubmitting(false);
       return;
     }
@@ -63,16 +65,12 @@ function LogInPage() {
 
   return (
     <div className="flex flex-col items-center">
-      <NavbarPublic
+      <PublicNavbar
         onLogin={() =>
-          navigate("/login", {
-            state: { from: "post" },
-          })
+          navigate("/login", { state: { from: "post" } })
         }
         onSignUp={() =>
-          navigate("/signup", {
-            state: { from: "post" },
-          })
+          navigate("/signup", { state: { from: "post" } })
         }
       />
 
@@ -88,7 +86,9 @@ function LogInPage() {
           rounded-[16px]
         "
       >
-        <h1 className="text-headline-2 text-brown-600">Log in</h1>
+        <h1 className="text-headline-2 text-brown-600">
+          Log in
+        </h1>
 
         <form
           id="login-form"
@@ -109,7 +109,7 @@ function LogInPage() {
             label="Password"
             type="password"
             placeholder="Password"
-            autoComplete="current-passwor"
+            autoComplete="current-password"
             value={password}
             variant={isError.password ? "secondary" : "primary"}
             onChange={setPassword}
@@ -119,28 +119,33 @@ function LogInPage() {
         <Button
           label="Log in"
           type="submit"
-          variant="primary"
           form="login-form"
+          variant="primary"
           width="w-[127px]"
           disabled={isSubmitting}
         />
 
         <footer className="flex gap-[12px] text-body-1">
-          <span className="text-brown-400">Don’t have any account?</span>
+          <span className="text-brown-400">
+            Don’t have any account?
+          </span>
 
-          <Link to="/signup" className="text-brown-600 underline">
+          <Link
+            to="/signup"
+            className="text-brown-600 underline"
+          >
             Sign up
           </Link>
         </footer>
       </main>
 
       {isAlert && (
-        <div className="fixed bottom-6 right-6 z-50 hidden md:flex">
+        <div className="hidden md:flex fixed bottom-6 right-6 z-50">
           <Alert
             title="Your password is incorrect or this email doesn’t exist"
             description="Please try another password or email"
             variant="secondary"
-            onClose={() => setAlert(false)}
+            onClose={() => setIsAlert(false)}
             timeout={3000}
           />
         </div>
@@ -150,4 +155,3 @@ function LogInPage() {
 }
 
 export default LogInPage;
- 

@@ -5,6 +5,7 @@ type Post = {
   title: string;
 };
 
+// Responsibility: manage autocomplete query and derive matching posts
 export function usePostAutocomplete(posts: Post[]) {
   const [query, setQuery] = useState("");
 

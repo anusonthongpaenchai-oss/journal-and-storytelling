@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import NavbarPublic from "@/components/layout/NavbarPublic";
+import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
 
@@ -15,11 +15,13 @@ type FormErrors = {
 };
 
 function SignUpPage() {
-  const [fullName, setFullName] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  // ===== Form State =====
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  // ===== UI / Validation State =====
   const [registration, setRegistration] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
   const [notValid, setNotValid] = useState(false);
@@ -46,6 +48,8 @@ function SignUpPage() {
       nextErrors.email = "Please enter email";
     } else if (!emailPattern.test(email)) {
       setNotValid(true);
+    } else {
+      setNotValid(false);
     }
 
     if (!password.trim()) {
@@ -72,16 +76,12 @@ function SignUpPage() {
 
   return (
     <div className="flex flex-col items-center">
-      <NavbarPublic
+      <PublicNavbar
         onLogin={() =>
-          navigate("/login", {
-            state: { from: "post" },
-          })
+          navigate("/login", { state: { from: "post" } })
         }
         onSignUp={() =>
-          navigate("/signup", {
-            state: { from: "post" },
-          })
+          navigate("/signup", { state: { from: "post" } })
         }
       />
 
@@ -107,7 +107,6 @@ function SignUpPage() {
             onSubmit={handleSubmit}
             className="flex flex-col gap-[24px] md:gap-[28px] w-full"
           >
-            {/* ================= Fields ================= */}
             <FormInput
               label="Name"
               placeholder={isError.fullName ?? "Full Name"}
@@ -134,13 +133,15 @@ function SignUpPage() {
                 value={email}
                 onChange={setEmail}
                 variant={
-                  isError.email || notValid ? "secondary" : "primary"
+                  isError.email || notValid
+                    ? "secondary"
+                    : "primary"
                 }
                 autoComplete="email"
               />
 
               {notValid && (
-                <span className="text-body-3 text-brand-red ">
+                <span className="text-body-3 text-brand-red">
                   Email must be a valid email
                 </span>
               )}
@@ -165,8 +166,7 @@ function SignUpPage() {
             </div>
           </form>
 
-          {/* ================= Submit ================= */}
-          <div className="flex items-center justify-center">
+          <div className="flex justify-center">
             <Button
               label="Sign up"
               type="submit"
@@ -176,8 +176,7 @@ function SignUpPage() {
             />
           </div>
 
-          {/* ================= Footer ================= */}
-          <footer className="flex justify-center gap-[12px] text-body-1 ">
+          <footer className="flex justify-center gap-[12px] text-body-1">
             <span className="text-brown-400">
               Already have an account?
             </span>
