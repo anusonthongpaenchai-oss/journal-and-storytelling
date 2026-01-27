@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Facebook, Linkedin, Twitter, Smile, Copy } from "lucide-react";
 import { CircularProgress } from "@chakra-ui/react";
@@ -19,25 +18,16 @@ import { CommentItem } from "./comment/CommentItem";
 import { Alert } from "@/components/feedback/Alert";
 import { formatDate } from "@/utils/FormatDate";
 
-type Post = {
-  id: string | number;
-  image: string;
-  category: string;
-  title: string;
-  description: string;
-  content: string;
-  author: string;
-  date: string;
-  likes: number;
-};
+import { usePost } from "@/context/PostContext";
 
 function PostPageMobile() {
-  const [post, setPost] = useState<Post | null>(null);
   const [showAuthGate, setShowAuthGate] = useState(false);
   const [isAlert, setIsAlert] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const { post, isLoading, fetchPost } = usePost();
 
   function requireAuth() {
     setShowAuthGate(true);
@@ -56,31 +46,13 @@ function PostPageMobile() {
 
   // ===== Data Fetching =====
   // Responsibility: retrieve article data by route param
-  const getPost = async () => {
-    try {
-      const result = await axios.get(
-        `https://blog-post-project-api.vercel.app/posts/${id}`
-      );
-      setPost(result.data);
-    } catch (err) {
-      alert(err);
-    }
-  };
-
   useEffect(() => {
-    getPost();
-  }, []);
+    fetchPost(id);
+  }, [fetchPost, id]);
 
-  if (!post) {
+  if (isLoading || !post) {
     return (
-      <div
-        className="
-          flex flex-col items-center
-          gap-[12px]
-          py-[48px]
-          md:hidden
-        "
-      >
+      <div className="flex flex-col items-center gap-[12px] py-[48px] md:hidden">
         <CircularProgress isIndeterminate size="50px" color="gray.700" />
         <span className="text-headline-4">Loading...</span>
       </div>
@@ -107,7 +79,6 @@ function PostPageMobile() {
         <img src={post.image} alt={post.title} />
 
         <section className="flex flex-col gap-[24px] px-[16px] pt-[24px] pb-[40px]">
-          {/* Header */}
           <header className="flex flex-col gap-[16px]">
             <div className="flex items-center gap-[16px]">
               <span
@@ -143,7 +114,7 @@ function PostPageMobile() {
             name={post.author}
             bio="I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.
 
-            When i’m not writing, I spends time volunteering at my local animal shelter, helping cats find loving homes."
+                When i’m not writing, I spends time volunteering at my local animal shelter, helping cats find loving homes."
             width="w-[343px]"
           />
         </section>
@@ -184,12 +155,12 @@ function PostPageMobile() {
           </div>
         </section>
 
-        {/* Alert */}
         {isAlert && (
           <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
             <Alert
               title="Copied!"
               description="This article has been copied to your clipboard."
+              timeout={3000}
               onClose={() => setIsAlert(false)}
             />
           </div>
