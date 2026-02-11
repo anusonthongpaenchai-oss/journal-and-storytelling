@@ -3,13 +3,13 @@ import ArticleSection from "./ArticleSection";
 
 function ContentSection() {
   return (
-      <div className="
+    <div className="
       flex flex-col
       md:gap-[80px] md:pt-[60px] md:pb-[120px] md:px-[120px]
       ">
-        <HeroSection />
-        <ArticleSection />
-      </div>
+      <HeroSection />
+      <ArticleSection />
+    </div>
   );
 }
 

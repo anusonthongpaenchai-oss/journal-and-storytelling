@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { SearchControlsDesktop, SearchControlsMobile } from "./SearchControls";
 import { BlogCardDesktop, BlogCardMobile } from "@/components/layout/BlogCard";
@@ -7,70 +6,47 @@ import { CircularProgress } from "@chakra-ui/react";
 import { formatDate } from "@/utils/FormatDate";
 import { usePostAutocomplete } from "@/hooks/usePostAutocomplete";
 import { useNavigate } from "react-router-dom";
-
-type Post = {
-  id: string;
-  image: string;
-  category: string;
-  title: string;
-  description: string;
-  content: string;
-  author: string;
-  date: string;
-  likes: number;
-};
+import { useAllPosts } from "@/context/AllPostContext";
+import { useRef } from "react";
 
 /* ================= Component ================= */
 
 export default function ArticleSection() {
-  const PAGE_SIZE: number = 6;
-
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { posts, isLoading, fetchPosts, hasMore, page, resetPosts } = useAllPosts();
   const [selectedCategory, setSelectedCategory] = useState<string>("Highlight");
-  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [allCategories, setAllCategories] = useState<string[]>(["Highlight"]);
   const { query, setQuery, suggestions } = usePostAutocomplete(posts);
+  const hasInitCategories = useRef(false);
   const navigate = useNavigate();
 
-  const getPost = async () => {
-    try {
-      if (isLoading) return;
-
-      setIsLoading(true);
-
-      const result = await axios.get(
-        "https://blog-post-project-api.vercel.app/posts"
-      );
-
-      setPosts(result.data.posts);
-    } catch (err) {
-      alert(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    getPost();
-  }, []);
-
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
+    resetPosts();
+    fetchPosts({
+      page: 1,
+      category: selectedCategory === "Highlight" ? undefined : selectedCategory,
+    });
   }, [selectedCategory]);
 
-  /* ================= Derived Data ================= */
+  useEffect(() => {
+    if (
+      hasInitCategories.current ||
+      !posts ||
+      posts.length === 0 ||
+      selectedCategory !== "Highlight"
+    ) {
+      return;
+    }
 
-  const categories: string[] = [
-    "Highlight",
-    ...Array.from(new Set(posts.map((post) => post.category))),
-  ];
+    const uniqueCategories = Array.from(
+      new Set(posts.map((post) => post.category))
+    );
 
-  const filteredPosts =
-    selectedCategory === "Highlight"
-      ? posts
-      : posts.filter((post) => post.category === selectedCategory);
+    setAllCategories(["Highlight", ...uniqueCategories]);
+    hasInitCategories.current = true;
+  }, [posts, selectedCategory]);
 
-  const visiblePosts = filteredPosts.slice(0, visibleCount);
+
+  const visiblePosts = posts ?? [];
 
   return (
     <>
@@ -83,7 +59,7 @@ export default function ArticleSection() {
       >
         {/* Controls */}
         <SearchControlsDesktop
-          categories={categories}
+          categories={allCategories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           query={query}
@@ -115,28 +91,34 @@ export default function ArticleSection() {
                 gap-[20px]
               "
             >
-              {visiblePosts.map((blog) => (
+              {visiblePosts.map((post) => (
                 <BlogCardDesktop
-                  key={blog.id}
-                  id={blog.id}
-                  image={blog.image}
-                  category={blog.category}
-                  title={blog.title}
-                  description={blog.description}
-                  author={blog.author}
+                  key={post.id}
+                  id={post.id}
+                  image={post.image || '/default-image.jpg'}
+                  category={post.category}
+                  title={post.title}
+                  description={post.description}
+                  author={post.author}
                   authorAvatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                  likes={blog.likes}
-                  date={formatDate(blog.date)}
+                  likes={post.likes || 0}
+                  date={formatDate(post.date)}
                 />
               ))}
             </div>
 
             {/* CTA */}
-            {visibleCount < filteredPosts.length && (
+            {hasMore && (
               <SectionLinkButton
                 label="View more"
-                showLoading={false}
-                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                showLoading={isLoading}
+                onClick={() =>
+                  fetchPosts({
+                    page: page + 1,
+                    category:
+                      selectedCategory === "Highlight" ? undefined : selectedCategory,
+                  })
+                }
               />
             )}
           </>
@@ -152,7 +134,7 @@ export default function ArticleSection() {
       >
         {/* Controls */}
         <SearchControlsMobile
-          categories={categories}
+          categories={allCategories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           query={query}
@@ -186,23 +168,29 @@ export default function ArticleSection() {
               <BlogCardMobile
                 key={blog.id}
                 id={blog.id}
-                image={blog.image}
+                image={blog.image || '/default-image.jpg'}
                 category={blog.category}
                 title={blog.title}
                 description={blog.description}
                 author={blog.author}
                 authorAvatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                likes={blog.likes}
+                likes={blog.likes || 0}
                 date={formatDate(blog.date)}
               />
             ))}
 
             {/* CTA */}
-            {visibleCount < filteredPosts.length && (
+            {hasMore && (
               <SectionLinkButton
                 label="View more"
-                showLoading={false}
-                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                showLoading={isLoading}
+                onClick={() =>
+                  fetchPosts({
+                    page: page + 1,
+                    category:
+                      selectedCategory === "Highlight" ? undefined : selectedCategory,
+                  })
+                }
               />
             )}
           </div>

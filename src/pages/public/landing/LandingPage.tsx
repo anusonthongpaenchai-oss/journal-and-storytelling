@@ -4,6 +4,8 @@ import PublicNavbar from "@/components/layout/PublicNavbar";
 import ContentSection from "./ContentSection";
 import Footer from "@/components/layout/Footer";
 
+import { AllPostProvider } from "@/context/AllPostContext";
+
 function LandingPage() {
   const navigate = useNavigate();
 
@@ -23,9 +25,9 @@ function LandingPage() {
         onLogin={handleLogin}
         onSignUp={handleSignUp}
       />
-
-      <ContentSection />
-
+      <AllPostProvider>
+        <ContentSection />
+      </AllPostProvider>
       <Footer />
     </>
   );
