@@ -1,30 +1,21 @@
-import { useNavigate } from "react-router-dom";
-
 import PublicNavbar from "@/components/layout/PublicNavbar";
+import { ProfileNavbarContainer } from "@/components/profile/ProfileNavbarContainer";
 import ContentSection from "./ContentSection";
 import Footer from "@/components/layout/Footer";
 
 import { AllPostProvider } from "@/context/AllPostContext";
+import { useAuth } from "@/context/AuthenticationContext";
 
 function LandingPage() {
-  const navigate = useNavigate();
-
-  // ===== Navigation Handlers =====
-  // Responsibility: route users to auth pages while preserving origin
-  function handleLogin() {
-    navigate("/login", { state: { from: "post" } });
-  }
-
-  function handleSignUp() {
-    navigate("/signup", { state: { from: "post" } });
-  }
+  const { isAuthenticated, state } = useAuth();
 
   return (
     <>
-      <PublicNavbar
-        onLogin={handleLogin}
-        onSignUp={handleSignUp}
-      />
+      {isAuthenticated && state.user?.role === "user" ? (
+        <ProfileNavbarContainer />
+      ) : (
+        <PublicNavbar/>
+      )}
       <AllPostProvider>
         <ContentSection />
       </AllPostProvider>

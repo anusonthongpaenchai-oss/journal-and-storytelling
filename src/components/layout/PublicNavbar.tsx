@@ -3,13 +3,11 @@ import { Link } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { PublicNavDrawer } from "../ui/PublicNavDrawer";
 import logo from "@/assets/common/logo.png";
+import { useNavigate } from "react-router-dom";
 
-type PublicNavActions = {
-  onLogin?: () => void;
-  onSignUp?: () => void;
-};
 
-function PublicNavbar({ onLogin, onSignUp }: PublicNavActions) {
+function PublicNavbar() {
+  const navigate = useNavigate();
   return (
     <nav
       className="
@@ -31,12 +29,12 @@ function PublicNavbar({ onLogin, onSignUp }: PublicNavActions) {
       </Link>
 
       <div className="hidden w-[276px] gap-[8px] md:flex">
-        <Button label="Log in" variant="secondary" onClick={onLogin} />
-        <Button label="Sign up" variant="primary" onClick={onSignUp} />
+        <Button label="Log in" variant="secondary" onClick={() => navigate("/login")} />
+        <Button label="Sign up" variant="primary" onClick={() => navigate("/signup")} />
       </div>
 
       <div className="md:hidden">
-        <PublicNavDrawer onLogin={onLogin} onSignUp={onSignUp} />
+        <PublicNavDrawer onLogin={() => navigate("/login")} onSignUp={() => navigate("/signup")} />
       </div>
     </nav>
   );
