@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // Layout
 import NotFound from "./components/layout/NotFound";
@@ -7,31 +7,86 @@ import NotFound from "./components/layout/NotFound";
 // Public pages
 import LandingPage from "./pages/public/landing/LandingPage";
 import PostPage from "./pages/public/post/PostPage";
-import LogInPage from "./pages/public/auth/LoginPage";
+import LoginPage from "./pages/public/auth/LoginPage";
 import SignUpPage from "./pages/public/auth/SignupPage";
+import SignupSuccessPage from "./pages/public/auth/SignupSuccessPage.js";
 
 // Profile pages
 import ProfilePage from "./pages/profile/ProfilePage";
 import ResetPasswordPage from "./pages/profile/ResetPasswordPage";
 
+import { useAuth } from "./context/AuthenticationContext";
+import AuthenticationRoute from "./components/auth/AuthenticationRoute";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import jwtInterceptor from "./utils/jwtIntercepter.js";
+
+jwtInterceptor();
+
 function App() {
+  const { isAuthenticated, state } = useAuth();
+
   return (
-    <Router>
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/post/:id" element={<PostPage />} />
-        <Route path="/login" element={<LogInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
+    <Routes>
+      {/* Public */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/post/:id" element={<PostPage />} />
 
-        {/* Profile */}
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/resetPassword" element={<ResetPasswordPage/>}/>
+      <Route
+          path="/login"
+          element={
+            <AuthenticationRoute
+              isLoading={state.getUserLoading}
+              isAuthenticated={isAuthenticated}
+            >
+              <LoginPage />
+            </AuthenticationRoute>
+          }
+        />
 
-        {/* Fallback */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+      <Route
+        path="/signup"
+        element={
+          <AuthenticationRoute
+            isLoading={state.getUserLoading}
+            isAuthenticated={isAuthenticated}
+          >
+            <SignUpPage />
+          </AuthenticationRoute>
+        }
+      />
+
+      <Route
+        path="/signup/success"
+        element={
+          <AuthenticationRoute
+            isLoading={state.getUserLoading}
+            isAuthenticated={isAuthenticated}
+          >
+            <SignupSuccessPage />
+          </AuthenticationRoute>
+        }
+      />
+
+      {/* Profile */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute
+            isLoading={state.getUserLoading}
+            isAuthenticated={isAuthenticated}
+            userRole={state.user?.role || "user"}
+            requiredRole="user"
+          >
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="/resetPassword" element={<ResetPasswordPage />} />
+
+      {/* Fallback */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

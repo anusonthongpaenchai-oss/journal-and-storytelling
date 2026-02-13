@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/feedback/Alert";
-import { useBackNavigation } from "@/hooks/useBackNavigation";
-
-import { testAccount } from "@/lib/mocks/dataProfile";
+import { useAuth } from "@/context/AuthenticationContext";
 
 type FormErrors = {
   email?: boolean;
   password?: boolean;
 };
 
-function LogInPage() {
+function LoginPage() {
   // ===== Form State =====
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,19 +22,20 @@ function LogInPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
 
-  const navigate = useNavigate();
-  const { goBack } = useBackNavigation();
+  const { login } = useAuth();
 
   // ===== Form Validation =====
   // Responsibility: validate credentials and update error state
   function validate(): boolean {
     const nextErrors: FormErrors = {};
 
-    if (email !== testAccount.email) {
+    if (!email.trim()) {
+      nextErrors.email = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       nextErrors.email = true;
     }
 
-    if (password !== testAccount.password) {
+    if (!password.trim()) {
       nextErrors.password = true;
     }
 
@@ -45,8 +44,8 @@ function LogInPage() {
   }
 
   // ===== Form Submission =====
-  // Responsibility: prevent duplicate submit, validate credentials, and navigate back on success
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  // Responsibility: prevent duplicate submit, validate credentials, and login
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (isSubmitting) return;
@@ -59,20 +58,22 @@ function LogInPage() {
       return;
     }
 
-    setIsSubmitting(false);
-    goBack();
+    try {
+      const result = await login({ email, password });
+
+      if (result?.error) {
+        setIsAlert(true);
+      }
+    } catch (error) {
+      setIsAlert(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div className="flex flex-col items-center">
-      <PublicNavbar
-        onLogin={() =>
-          navigate("/login", { state: { from: "post" } })
-        }
-        onSignUp={() =>
-          navigate("/signup", { state: { from: "post" } })
-        }
-      />
+      <PublicNavbar/>
 
       <main
         className="
@@ -154,4 +155,4 @@ function LogInPage() {
   );
 }
 
-export default LogInPage;
+export default LoginPage;
