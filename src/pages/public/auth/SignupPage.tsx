@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
-import { useNavigate } from "react-router-dom";
 
 type FormErrors = {
   name?: string;
@@ -16,12 +15,11 @@ type FormErrors = {
 
 function SignUpPage() {
   // ===== Form State =====
-  const { register, state } = useAuth();
+  const { register } = useAuth();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   // ===== UI / Validation State =====
   const [isError, setIsError] = useState<FormErrors>({});

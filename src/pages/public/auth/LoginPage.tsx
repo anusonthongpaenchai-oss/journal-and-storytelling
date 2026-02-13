@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
@@ -22,7 +22,6 @@ function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
 
-  const navigate = useNavigate();
   const { login } = useAuth();
 
   // ===== Form Validation =====

@@ -10,18 +10,7 @@ export default function NotFound() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <PublicNavbar
-        onLogin={() =>
-          navigate("/login", {
-            state: { from: "/" },
-          })
-        }
-        onSignUp={() =>
-          navigate("/signup", {
-            state: { from: "/" },
-          })
-        }
-      />
+      <PublicNavbar />
 
       <main
         className="

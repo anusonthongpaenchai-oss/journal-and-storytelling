@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { Facebook, Linkedin, Twitter, Smile, Copy } from "lucide-react";
 import { CircularProgress } from "@chakra-ui/react";
@@ -25,7 +25,6 @@ function PostPageMobile() {
   const [isAlert, setIsAlert] = useState(false);
 
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const { post, isLoading, fetchPost } = usePost();
 
@@ -61,18 +60,7 @@ function PostPageMobile() {
 
   return (
     <div className="flex flex-col md:hidden">
-      <PublicNavbar
-        onLogin={() =>
-          navigate("/login", {
-            state: { from: "post" },
-          })
-        }
-        onSignUp={() =>
-          navigate("/signup", {
-            state: { from: "post" },
-          })
-        }
-      />
+      <PublicNavbar/>
 
       {/* ================= Content ================= */}
       <main>
