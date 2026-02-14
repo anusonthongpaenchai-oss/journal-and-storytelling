@@ -1,8 +1,5 @@
 import type { ReactNode } from "react";
 import { User, RotateCw } from "lucide-react";
-
-import { profileData } from "@/lib/mocks/dataProfile";
-
 import { ProfileNavbarContainer } from "@/components/profile/ProfileNavbarContainer";
 import PageTitle from "@/components/profile/PageTitle";
 import SidebarButton from "@/components/layout/SidebarButton";
