@@ -20,9 +20,10 @@ const MENU_ITEMS = [
 
 type ProfileTemplateProps = {
   component?: ReactNode;
+  title?: string;
 };
 
-function ProfileTemplate({ component }: ProfileTemplateProps) {
+function ProfileTemplate({ component, title }: ProfileTemplateProps) {
   const { state } = useAuth();
   const displayName = state.user?.name ?? state.user?.username ?? "User";
   const avatarUrl = state.user?.profilePic ?? "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -50,6 +51,7 @@ function ProfileTemplate({ component }: ProfileTemplateProps) {
             avatarUrl={avatarUrl}
             alt={`Profile icon`}
             name={displayName}
+            title={title ?? ""}
           />
         </div>
 

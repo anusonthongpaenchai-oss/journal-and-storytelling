@@ -132,6 +132,7 @@ function ResetPasswordPage() {
             isSubmitting={isSubmitting}
           />
         }
+        title="Reset password"
       />
 
       {isConfirm && (

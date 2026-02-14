@@ -112,6 +112,7 @@ function ProfilePage() {
             isSaving={isSaving}
           />
         }
+        title="Profile"
       />
 
       {isAlert && (
