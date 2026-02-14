@@ -19,6 +19,7 @@ import { useAuth } from "./context/AuthenticationContext";
 import AuthenticationRoute from "./components/auth/AuthenticationRoute";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import jwtInterceptor from "./utils/jwtIntercepter.js";
+import { LoadingScreen } from "./components/ui/LodingScreen";
 
 jwtInterceptor();
 
@@ -26,12 +27,15 @@ function App() {
   const { isAuthenticated, state } = useAuth();
 
   return (
-    <Routes>
-      {/* Public */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/post/:id" element={<PostPage />} />
+    <>
+      {state.logoutLoading && <LoadingScreen />}
 
-      <Route
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/post/:id" element={<PostPage />} />
+
+        <Route
           path="/login"
           element={
             <AuthenticationRoute
@@ -43,51 +47,65 @@ function App() {
           }
         />
 
-      <Route
-        path="/signup"
-        element={
-          <AuthenticationRoute
-            isLoading={state.getUserLoading}
-            isAuthenticated={isAuthenticated}
-          >
-            <SignUpPage />
-          </AuthenticationRoute>
-        }
-      />
+        <Route
+          path="/signup"
+          element={
+            <AuthenticationRoute
+              isLoading={state.getUserLoading}
+              isAuthenticated={isAuthenticated}
+            >
+              <SignUpPage />
+            </AuthenticationRoute>
+          }
+        />
 
-      <Route
-        path="/signup/success"
-        element={
-          <AuthenticationRoute
-            isLoading={state.getUserLoading}
-            isAuthenticated={isAuthenticated}
-          >
-            <SignupSuccessPage />
-          </AuthenticationRoute>
-        }
-      />
+        <Route
+          path="/signup/success"
+          element={
+            <AuthenticationRoute
+              isLoading={state.getUserLoading}
+              isAuthenticated={isAuthenticated}
+            >
+              <SignupSuccessPage />
+            </AuthenticationRoute>
+          }
+        />
 
-      {/* Profile */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute
-            isLoading={state.getUserLoading}
-            isAuthenticated={isAuthenticated}
-            userRole={state.user?.role || "user"}
-            requiredRole="user"
-          >
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
+        {/* Profile */}
+        <Route
+          path="/setting/profile"
+          element={
+            <ProtectedRoute
+              isLoading={state.getUserLoading}
+              isAuthenticated={isAuthenticated}
+              userRole={state.user?.role || "user"}
+              requiredRole="user"
+            >
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route path="/resetPassword" element={<ResetPasswordPage />} />
+        <Route
+          path="/setting/resetPassword"
+          element={
+            <ProtectedRoute
+              isLoading={state.getUserLoading}
+              isAuthenticated={isAuthenticated}
+              userRole={state.user?.role || "user"}
+              requiredRole="user"
+            >
+              <ResetPasswordPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Fallback */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* Fallback */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
 
 export default App;
+

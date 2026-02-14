@@ -2,9 +2,10 @@ type PageTitleProps = {
   avatarUrl: string;
   alt: string;
   name: string;
+  title: string;
 };
 
-function PageTitle({ avatarUrl, alt, name }: PageTitleProps) {
+function PageTitle({ avatarUrl, alt, name, title }: PageTitleProps) {
   return (
     <div className="flex items-center gap-[16px] md:w-[794px]">
       <img
@@ -24,7 +25,7 @@ function PageTitle({ avatarUrl, alt, name }: PageTitleProps) {
 
         <span className="text-brown-300">|</span>
 
-        <span className="text-brown-600">Profile</span>
+        <span className="text-brown-600">{title}</span>
       </div>
     </div>
   );

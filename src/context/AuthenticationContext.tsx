@@ -23,12 +23,18 @@ interface User {
 interface AuthState {
     loading: boolean | null;
     getUserLoading: boolean | null;
+    logoutLoading: boolean;
     error: string | null;
     user: User | null;
 }
 
 interface LoginResponse {
     access_token: string;
+}
+
+interface GetUserResponse {
+    user?: User;
+    data?: User;
 }
 
 interface AuthContextValue {
@@ -57,6 +63,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     const [state, setState] = useState<AuthState>({
         loading: null,
         getUserLoading: null,
+        logoutLoading: false,
         error: null,
         user: null,
     });
@@ -82,7 +89,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         try {
             setState((prev) => ({ ...prev, getUserLoading: true }));
 
-            const response = await axios.get<User>(
+            const response = await axios.get<User | GetUserResponse>(
                 `${API_BASE_URL}/auth/get-user`,
                 {
                     headers: {
@@ -91,13 +98,15 @@ function AuthProvider({ children }: AuthProviderProps) {
                 }
             );
 
-            console.log("fetchUser success:", response.data);
+            const payload = response.data as User | GetUserResponse;
+            const normalizedUser = "id" in payload ? payload : payload.user ?? payload.data ?? null;
+
             setState((prev) => ({
                 ...prev,
-                user: response.data,
+                user: normalizedUser,
                 getUserLoading: false,
             }));
-            return true;
+            return Boolean(normalizedUser);
         } catch (error) {
             const err = error as AxiosError<{ error: string }>;
             console.error("fetchUser error:", err);
@@ -124,8 +133,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     const login = async (
         data: unknown
     ): Promise<{ error?: string } | void> => {
-        console.log("Login data sent to backend:", data);
-
         try {
             setState((prev) => ({
                 ...prev,
@@ -146,11 +153,9 @@ function AuthProvider({ children }: AuthProviderProps) {
                 loading: false,
             }));
 
-            console.log("About to fetchUser...");
             const userFetched = await fetchUser();
             if (userFetched) {
-                console.log("fetchUser completed, navigating to /profile");
-                navigate("/profile");
+                navigate("/");
                 return;
             }
 
@@ -214,16 +219,24 @@ function AuthProvider({ children }: AuthProviderProps) {
     /* ============ Logout ============ */
 
     const logout = (): void => {
-        localStorage.removeItem("token");
+        setState((prev) => ({
+            ...prev,
+            logoutLoading: true,
+        }));
 
-        setState({
-            user: null,
-            error: null,
-            loading: null,
-            getUserLoading: null,
-        });
+        window.setTimeout(() => {
+            localStorage.removeItem("token");
 
-        navigate("/");
+            setState({
+                user: null,
+                error: null,
+                loading: null,
+                getUserLoading: null,
+                logoutLoading: false,
+            });
+
+            window.location.assign("/");
+        }, 400);
     };
 
     const isAuthenticated = Boolean(state.user);
@@ -259,3 +272,4 @@ const useAuth = (): AuthContextValue => {
 };
 
 export { AuthProvider, useAuth };
+

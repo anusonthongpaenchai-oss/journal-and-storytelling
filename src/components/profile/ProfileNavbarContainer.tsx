@@ -5,7 +5,8 @@ import ProfileNavbar from "@/components/profile/ProfileNavbar";
 import { UserDropdownMenu } from "@/components/profile/UserDropdownMenu";
 import { NotificationList } from "@/components/profile/NotificationList";
 
-import { dataNotification, profileData } from "@/lib/mocks/dataProfile";
+import { dataNotification } from "@/lib/mocks/dataProfile";
+import { useAuth } from "@/context/AuthenticationContext";
 
 export function ProfileNavbarContainer() {
   const [profileMenu, setProfileMenu] = useState(false);
@@ -13,12 +14,15 @@ export function ProfileNavbarContainer() {
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
 
   const navigate = useNavigate();
+  const { state, logout } = useAuth();
+  const displayName = state.user?.name ?? state.user?.username ?? "User";
+  const avatarUrl = state.user?.profilePic ?? "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   return (
     <div>
       <ProfileNavbar
-        name={profileData.name}
-        avatarUrl={profileData.avatarUrl}
+        name={displayName}
+        avatarUrl={avatarUrl}
         hasUnreadNotifications={hasUnreadNotifications}
         onNotificationClick={() => {
           setNotifications(true);
@@ -27,9 +31,9 @@ export function ProfileNavbarContainer() {
         onProfileClick={() => {
           setProfileMenu(true);
         }}
-        onProfile={() => navigate("/profile")}
-        onResetPassword={() => navigate("/resetPassword")}
-        onLogout={() => navigate("/")}
+        onProfile={() => navigate("/setting/profile")}
+        onResetPassword={() => navigate("/setting/resetPassword")}
+        onLogout={() => logout()}
       />
 
       {/* ================= Notifications ================= */}
@@ -67,9 +71,9 @@ export function ProfileNavbarContainer() {
 
           <div className="fixed right-28 top-[75px] z-50">
             <UserDropdownMenu
-              onProfile={() => navigate("/profile")}
-              onResetPassword={() => navigate("/resetPassword")}
-              onLogout={() => navigate("/")}
+              onProfile={() => navigate("/setting/profile")}
+              onResetPassword={() => navigate("/setting/resetPassword")}
+              onLogout={() => logout()}
             />
           </div>
         </>
@@ -77,3 +81,4 @@ export function ProfileNavbarContainer() {
     </div>
   );
 }
+

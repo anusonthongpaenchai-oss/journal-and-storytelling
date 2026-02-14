@@ -28,14 +28,20 @@ function LoginPage() {
   // Responsibility: validate credentials and update error state
   function validate(): boolean {
     const nextErrors: FormErrors = {};
+    let hasError = false;
 
     if (!email.trim()) {
-      nextErrors.email = true;
+      hasError = true;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      nextErrors.email = true;
+      hasError = true;
     }
 
     if (!password.trim()) {
+      hasError = true;
+    }
+
+    if (hasError) {
+      nextErrors.email = true;
       nextErrors.password = true;
     }
 
@@ -62,9 +68,20 @@ function LoginPage() {
       const result = await login({ email, password });
 
       if (result?.error) {
+        setIsError({
+          email: true,
+          password: true,
+        });
         setIsAlert(true);
+        return;
       }
+
+      setIsError({});
     } catch (error) {
+      setIsError({
+        email: true,
+        password: true,
+      });
       setIsAlert(true);
     } finally {
       setIsSubmitting(false);
