@@ -1,10 +1,10 @@
 import { useState } from "react";
+import axios from "axios";
 
 import ProfileTemplate from "./ProfileTemplate";
 import ResetPasswordFormCard from "./resetPassword/ResetPasswordFormCard";
 import ConfirmDialog from "@/components/layout/ConfirmDialog";
-
-import { testAccount } from "@/lib/mocks/dataProfile";
+import { Alert } from "@/components/feedback/Alert";
 
 type FormErrors = {
   currentPassword?: boolean;
@@ -12,27 +12,32 @@ type FormErrors = {
   confirmPassword?: boolean;
 };
 
-function ResetPasswordPage() {
-  // ===== UI State =====
-  // Control confirm dialog visibility
-  const [isConfirm, setIsConfirm] = useState(false);
+type Feedback = {
+  title: string;
+  description: string;
+  variant: "primary" | "secondary";
+};
 
-  // ===== Form State =====
+function ResetPasswordPage() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const [isConfirm, setIsConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // ===== Validation =====
-  // Responsibility: validate reset password form before confirmation
   function validate(): boolean {
     const nextErrors: FormErrors = {};
 
-    if (currentPassword !== testAccount.password) {
+    if (!currentPassword.trim()) {
       nextErrors.currentPassword = true;
     }
 
-    if (!newPassword.trim()) {
+    if (!newPassword.trim() || newPassword.length < 6) {
       nextErrors.newPassword = true;
     }
 
@@ -49,23 +54,65 @@ function ResetPasswordPage() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  // ===== Reset Action =====
-  // Responsibility: perform password reset after confirmation
-  function handleReset() {
-    alert("Reset แล้วจ้า");
+  async function handleReset() {
+    if (!API_BASE_URL) {
+      setFeedback({
+        title: "Reset password failed",
+        description: "API base URL is not configured",
+        variant: "secondary",
+      });
+      setIsConfirm(false);
+      return;
+    }
 
-    setIsConfirm(false);
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+    try {
+      setIsSubmitting(true);
+
+      await axios.patch(`${API_BASE_URL}/setting/reset-password`, {
+        oldPassword: currentPassword,
+        newPassword,
+      });
+
+      setFeedback({
+        title: "Password updated",
+        description: "Your password has been successfully updated",
+        variant: "primary",
+      });
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setIsError({});
+    } catch (error) {
+      let message = "Please try again later.";
+      let isInvalidCurrentPassword = false;
+
+      if (axios.isAxiosError<{ error?: string }>(error)) {
+        message = error.response?.data?.error || message;
+        isInvalidCurrentPassword = message.toLowerCase().includes("old password");
+      }
+
+      if (isInvalidCurrentPassword) {
+        setIsError((prev) => ({
+          ...prev,
+          currentPassword: true,
+        }));
+      }
+
+      setFeedback({
+        title: "Reset password failed",
+        description: message,
+        variant: "secondary",
+      });
+    } finally {
+      setIsSubmitting(false);
+      setIsConfirm(false);
+    }
   }
 
-  // ===== Form Submission =====
-  // Responsibility: validate form and open confirmation dialog
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!validate()) return;
-
     setIsConfirm(true);
   }
 
@@ -82,6 +129,7 @@ function ResetPasswordPage() {
             confirmPassword={confirmPassword}
             setConfirmPassword={setConfirmPassword}
             onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
           />
         }
       />
@@ -93,8 +141,29 @@ function ResetPasswordPage() {
           confirmLabel="Reset"
           cancelLabel="Cancel"
           onCancel={() => setIsConfirm(false)}
-          onConfirm={handleReset}
+          onConfirm={() => {
+            void handleReset();
+          }}
         />
+      )}
+
+      {feedback && (
+        <div
+          className="
+            sticky bottom-2
+            px-2
+            z-50
+            md:fixed md:bottom-6 md:right-6
+          "
+        >
+          <Alert
+            title={feedback.title}
+            description={feedback.description}
+            variant={feedback.variant}
+            onClose={() => setFeedback(null)}
+            timeout={3000}
+          />
+        </div>
       )}
     </div>
   );

@@ -16,6 +16,7 @@ type ResetPasswordFormCardProps = {
   confirmPassword: string;
   setConfirmPassword: (value: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  isSubmitting?: boolean;
 };
 
 function ResetPasswordFormCard({
@@ -27,6 +28,7 @@ function ResetPasswordFormCard({
   confirmPassword,
   setConfirmPassword,
   onSubmit,
+  isSubmitting = false,
 }: ResetPasswordFormCardProps) {
   return (
     <div
@@ -95,10 +97,11 @@ function ResetPasswordFormCard({
 
       <Button
         type="submit"
-        label="Reset password"
+        label={isSubmitting ? "Resetting..." : "Reset password"}
         form="reset-form"
         variant="primary"
         width="w-[208px]"
+        disabled={isSubmitting}
       />
     </div>
   );

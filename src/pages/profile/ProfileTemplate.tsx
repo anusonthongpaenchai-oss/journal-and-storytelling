@@ -6,16 +6,17 @@ import { profileData } from "@/lib/mocks/dataProfile";
 import { ProfileNavbarContainer } from "@/components/profile/ProfileNavbarContainer";
 import PageTitle from "@/components/profile/PageTitle";
 import SidebarButton from "@/components/layout/SidebarButton";
+import { useAuth } from "@/context/AuthenticationContext";
 
 const MENU_ITEMS = [
   {
     label: "Profile",
-    to: "/profile",
+    to: "/setting/profile",
     icon: <User className="w-[24px] h-[24px]" />,
   },
   {
     label: "Reset password",
-    to: "/resetPassword",
+    to: "/setting/resetPassword",
     icon: <RotateCw className="w-[24px] h-[24px]" />,
   },
 ];
@@ -25,6 +26,10 @@ type ProfileTemplateProps = {
 };
 
 function ProfileTemplate({ component }: ProfileTemplateProps) {
+  const { state } = useAuth();
+  const displayName = state.user?.name ?? state.user?.username ?? "User";
+  const avatarUrl = state.user?.profilePic ?? "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
   return (
     <div className="flex flex-col">
       <ProfileNavbarContainer />
@@ -45,9 +50,9 @@ function ProfileTemplate({ component }: ProfileTemplateProps) {
         {/* ================= Page Title ================= */}
         <div className="flex gap-[24px] px-[16px] py-[24px]">
           <PageTitle
-            avatarUrl={profileData.avatarUrl}
-            alt={`${profileData.name} icon`}
-            name={profileData.name}
+            avatarUrl={avatarUrl}
+            alt={`Profile icon`}
+            name={displayName}
           />
         </div>
 

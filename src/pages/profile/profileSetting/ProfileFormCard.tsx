@@ -1,6 +1,6 @@
+import { useRef, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { FormInput } from "@/components/layout/FormInput";
-import { profileData } from "@/lib/mocks/dataProfile";
 
 type ProfileFormCardProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -10,6 +10,9 @@ type ProfileFormCardProps = {
   setUsername: (value: string) => void;
   email: string;
   setEmail: (value: string) => void;
+  userPicture: string;
+  onImageChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  isSaving?: boolean;
 };
 
 function ProfileFormCard({
@@ -20,7 +23,16 @@ function ProfileFormCard({
   setUsername,
   email,
   setEmail,
+  userPicture,
+  onImageChange,
+  isSaving = false,
 }: ProfileFormCardProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div
       className="
@@ -34,30 +46,40 @@ function ProfileFormCard({
         md:rounded-[16px]
       "
     >
-      <div className="flex flex-col items-center gap-[28px] md:flex-row">
-        <img
-          src={profileData.avatarUrl}
-          alt={profileData.username}
-          className="
-            w-[120px] h-[120px]
-            rounded-full
-          "
-        />
-
-        <Button
-          label="Upload profile picture"
-          variant="secondary"
-          width="w-[255px]"
-        />
-      </div>
-
-      <div className="w-full h-px bg-brown-300" />
-
       <form
         id="save-form"
         onSubmit={onSubmit}
         className="flex flex-col gap-[28px]"
       >
+        <div className="flex flex-col items-center gap-[28px] md:flex-row">
+          <img
+            src={userPicture}
+            alt={`${username} icon`}
+            className="
+            w-[120px] h-[120px]
+            rounded-full
+            object-cover
+          "
+          />
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={onImageChange}
+            className="hidden"
+          />
+
+          <Button
+            label="Upload profile picture"
+            variant="secondary"
+            width="w-[255px]"
+            onClick={handleUploadClick}
+            disabled={isSaving}
+          />
+        </div>
+
+        <div className="w-full h-px bg-brown-300" />
         <FormInput
           label="Name"
           value={name}
@@ -83,11 +105,12 @@ function ProfileFormCard({
 
       <div className="flex justify-start">
         <Button
-          label="Save"
+          label={isSaving ? "Saving..." : "Save"}
           type="submit"
           form="save-form"
           variant="primary"
           width="w-[120px]"
+          disabled={isSaving}
         />
       </div>
     </div>
