@@ -14,6 +14,7 @@ type Post = {
   author: string;
   date: string;
   likes: number;
+  likes_count?: number;
 };
 
 type PostContextValue = {
@@ -32,6 +33,10 @@ const PostContext = createContext<PostContextValue | undefined>(undefined);
 export function PostProvider({ children }: { children: ReactNode }) {
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  if (!API_BASE_URL) {
+    console.warn("VITE_API_BASE_URL is not defined. Please check your .env configuration.");
+  }
 
   const fetchPost = useCallback(
     async (id: string | number | undefined) => {
@@ -41,7 +46,7 @@ export function PostProvider({ children }: { children: ReactNode }) {
 
       try {
         const result = await axios.get(
-          `https://blog-post-project-api.vercel.app/posts/${id}`
+          `${API_BASE_URL}/posts/${id}`
         );
         setPost(result.data);
       } catch (err) {
