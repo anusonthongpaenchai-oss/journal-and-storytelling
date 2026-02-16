@@ -36,8 +36,8 @@ type Comment = {
 const DEFAULT_COMMENT_AVATAR =
   "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-function getLikeStorageKey(postId?: string) {
-  return postId ? `post-liked:${postId}` : "";
+function getLikeStorageKey(postId?: string, userId?: string) {
+  return postId && userId ? `post-liked:${userId}:${postId}` : "";
 }
 
 function PostPageMobile() {
@@ -82,7 +82,7 @@ function PostPageMobile() {
 
   const handleLike = async () => {
     if (!post?.id || isLikeLoading) return;
-    const likeStorageKey = getLikeStorageKey(id);
+    const likeStorageKey = getLikeStorageKey(id, state.user?.id);
 
     try {
       setIsLikeLoading(true);
@@ -181,9 +181,16 @@ function PostPageMobile() {
   }, [post?.likes_count, hasLikeInteracted]);
 
   useEffect(() => {
-    const likeStorageKey = getLikeStorageKey(id);
+    const likeStorageKey = getLikeStorageKey(id, state.user?.id);
     const storedLike = likeStorageKey ? localStorage.getItem(likeStorageKey) : null;
     const legacyLikeCountStorageKey = id ? `post-liked-count:${id}` : "";
+    const legacyLikeStateStorageKey = id ? `post-liked:${id}` : "";
+
+    if (!isAuthenticated || !state.user?.id) {
+      setIsLiked(false);
+      setHasLikeInteracted(false);
+      return;
+    }
 
     if (storedLike === "true") {
       setIsLiked(true);
@@ -199,7 +206,10 @@ function PostPageMobile() {
     if (legacyLikeCountStorageKey) {
       localStorage.removeItem(legacyLikeCountStorageKey);
     }
-  }, [id]);
+    if (legacyLikeStateStorageKey) {
+      localStorage.removeItem(legacyLikeStateStorageKey);
+    }
+  }, [id, isAuthenticated, state.user?.id]);
 
   useEffect(() => {
     const postId = Number(post?.id);
