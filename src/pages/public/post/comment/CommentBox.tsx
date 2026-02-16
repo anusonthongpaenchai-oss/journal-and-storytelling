@@ -6,7 +6,9 @@ type CommentBoxProps = {
   value?: string;
   gap?: string;
   onChange?: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: () => void | Promise<void>;
+  isInvalid?: boolean;
+  isSubmitting?: boolean;
 };
 
 export function CommentBox({
@@ -14,6 +16,8 @@ export function CommentBox({
   gap = 'gap-[8px]',
   onChange,
   onSubmit,
+  isInvalid = false,
+  isSubmitting = false,
 }: CommentBoxProps) {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,14 +37,16 @@ export function CommentBox({
         placeholder="What are your thoughts?"
         value={value}
         onChange={onChange}
+        isInvalid={isInvalid}
       />
 
       <div className="flex w-[121px] self-end">
-          <Button
-            type="submit"
-            label="Send"
-            variant="primary"
-          />
+        <Button
+          type="submit"
+          label={isSubmitting ? "Sending..." : "Send"}
+          variant="primary"
+          disabled={isSubmitting}
+        />
       </div>
 
     </form>

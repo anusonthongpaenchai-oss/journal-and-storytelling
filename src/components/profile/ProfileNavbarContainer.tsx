@@ -19,7 +19,7 @@ export function ProfileNavbarContainer() {
   const avatarUrl = state.user?.profilePic ?? "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   return (
-    <div>
+    <>
       <ProfileNavbar
         name={displayName}
         avatarUrl={avatarUrl}
@@ -78,7 +78,7 @@ export function ProfileNavbarContainer() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
 

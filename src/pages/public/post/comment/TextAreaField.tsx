@@ -3,6 +3,7 @@ type TextAreaFieldProps = {
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
+  isInvalid?: boolean;
 };
 
 export function TextAreaField({
@@ -10,6 +11,7 @@ export function TextAreaField({
   placeholder,
   value,
   onChange,
+  isInvalid = false,
 }: TextAreaFieldProps) {
   return (
     <div
@@ -24,7 +26,7 @@ export function TextAreaField({
 
       <textarea
         rows={4}
-        className="
+        className={`
             h-[102px]
             flex
             gap-[10px]
@@ -35,11 +37,14 @@ export function TextAreaField({
             text-body-1
             text-brown-600
             placeholder:text-brown-400
-            border border-brown-300
+            border
             rounded-[8px]
             focus:outline-none
-            focus:border-brown-500
-          "
+            ${isInvalid ? "border-brand-red focus:border-brand-red" : "border-brown-300 focus:border-brown-500"}
+          `}
+        style={{
+          borderColor: isInvalid ? "border-brand-red" : undefined,
+        }}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange?.(e.target.value)}

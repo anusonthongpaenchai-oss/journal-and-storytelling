@@ -1,17 +1,28 @@
 import PostPageDesktop from "./PostPageDesktop";
 import PostPageMobile from "./PostPageMobile";
 import { PostProvider } from "@/context/PostContext";
+import PublicNavbar from "@/components/layout/PublicNavbar";
+import { ProfileNavbarContainer } from "@/components/profile/ProfileNavbarContainer";
+import { useAuth } from "@/context/AuthenticationContext";
 
 // Page component
 // Responsibility: compose post page layout and provide post context
 function PostPage() {
+  const { isAuthenticated, state } = useAuth();
+
   return (
-    <PostProvider>
-      <main aria-label="Post page">
-        <PostPageDesktop />
-        <PostPageMobile />
-      </main>
-    </PostProvider>
+    <>
+      {isAuthenticated && state.user?.role === "user"
+        ? (<ProfileNavbarContainer />)
+        : (<PublicNavbar />)
+      }
+      <PostProvider>
+        <main aria-label="Post page">
+          <PostPageDesktop />
+          <PostPageMobile />
+        </main>
+      </PostProvider>
+    </>
   );
 }
 

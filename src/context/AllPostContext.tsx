@@ -13,7 +13,7 @@ type Post = {
   author: string;
   date: string;
   image?: string;
-  likes?: number;
+  likes_count?: number;
 }
 
 type FetchPostOptions = {

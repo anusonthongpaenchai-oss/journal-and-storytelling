@@ -3,7 +3,7 @@ import { SearchControlsDesktop, SearchControlsMobile } from "./SearchControls";
 import { BlogCardDesktop, BlogCardMobile } from "@/components/layout/BlogCard";
 import { SectionLinkButton } from "@/components/ui/SectionLink";
 import { CircularProgress } from "@chakra-ui/react";
-import { formatDate } from "@/utils/FormatDate";
+import { formatDate } from "@/utils/formatDate";
 import { usePostAutocomplete } from "@/hooks/usePostAutocomplete";
 import { useNavigate } from "react-router-dom";
 import { useAllPosts } from "@/context/AllPostContext";
@@ -101,7 +101,7 @@ export default function ArticleSection() {
                   description={post.description}
                   author={post.author}
                   authorAvatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                  likes={post.likes || 0}
+                  likes={post.likes_count ?? 0}
                   date={formatDate(post.date)}
                 />
               ))}
@@ -174,7 +174,7 @@ export default function ArticleSection() {
                 description={blog.description}
                 author={blog.author}
                 authorAvatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                likes={blog.likes || 0}
+                likes={blog.likes_count ?? 0}
                 date={formatDate(blog.date)}
               />
             ))}
