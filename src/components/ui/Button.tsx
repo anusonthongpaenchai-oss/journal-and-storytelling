@@ -29,10 +29,11 @@ export function Button({
     text-body-1
     rounded-[999px]
     hover:cursor-pointer
+    px-[40px] py-[12px]
     flex
     items-center justify-center
+    whitespace-nowrap
   `;
-
   const variantClassName =
     variant === "primary"
       ? `
