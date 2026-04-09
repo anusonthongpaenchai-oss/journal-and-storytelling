@@ -53,7 +53,7 @@ type AdminSidebarProps = {
 
 function AdminSidebar({ onLogout, end }: AdminSidebarProps) {
     return (
-        <div className="w-[280px] py-[16px] bg-brown-200">
+        <div className="w-[280px] h-[1024px] py-[16px] bg-brown-200">
             <aside className="flex flex-col  min-h-screen">
                 <div className="flex flex-col justify-center gap-[4px] border-b border-brown-300 h-[200px] px-[18px] py-[24px]">
                     <img src={logo} alt="hh. logo" width="60" />

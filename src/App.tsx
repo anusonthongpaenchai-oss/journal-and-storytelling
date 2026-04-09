@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { AllPostProvider } from "@/context/AllPostContext";
 
 // Layout
 import NotFound from "./components/layout/NotFound";
@@ -24,6 +23,7 @@ import { LoadingScreen } from "./components/ui/LodingScreen";
 
 // Admin Page
 import PostManagementPage from "./pages/admin/PostManagementPage.js";
+import EditPostPage from "./pages/admin/EditPostPage";
 
 jwtInterceptor();
 
@@ -33,7 +33,6 @@ function App() {
   return (
     <>
       {state.logoutLoading && <LoadingScreen />}
-      <AllPostProvider>
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />
@@ -110,10 +109,13 @@ function App() {
             path="/admin/managements"
             element={<PostManagementPage />} />
 
+          <Route
+            path="/admin/edit-post/:id"
+            element={<EditPostPage />} />
+
           {/* Fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AllPostProvider>
     </>
   );
 }

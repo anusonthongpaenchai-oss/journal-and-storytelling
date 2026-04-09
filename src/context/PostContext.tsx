@@ -21,6 +21,7 @@ type PostContextValue = {
   post: Post | null;
   isLoading: boolean;
   fetchPost: (id: string | number | undefined) => Promise<void>;
+  updatePost: (id: string | number, data: Partial<Post> | FormData) => Promise<void>;
 };
 
 /* ================= Context ================= */
@@ -58,8 +59,27 @@ export function PostProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const updatePost = async (id: string | number, data: Partial<Post> | FormData) => {
+    setIsLoading(true);
+    try {
+      await axios.put(`${API_BASE_URL}/posts/${id}`, data);
+      if (!(data instanceof FormData)) {
+        setPost((prev) => (prev ? { ...prev, ...data } : null));
+      } else {
+        await fetchPost(id);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update post");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   return (
-    <PostContext.Provider value={{ post, isLoading, fetchPost }}>
+    <PostContext.Provider value={{ post, isLoading, fetchPost, updatePost }}>
       {children}
     </PostContext.Provider>
   );

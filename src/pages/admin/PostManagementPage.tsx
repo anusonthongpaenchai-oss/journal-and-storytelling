@@ -19,9 +19,10 @@ import { AuthGateModal } from "@/components/layout/AuthGateModal";
 import { useAuth } from "@/context/AuthenticationContext";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useAllPosts } from "@/context/AllPostContext";
+import { useAllPosts, AllPostProvider } from "@/context/AllPostContext";
+import { PostProvider } from "@/context/PostContext";
 
-function PostManagementPage() {
+function PostManagement() {
     const { logout } = useAuth();
     const navigate = useNavigate();
     const { posts, isLoading, fetchPosts, deletePost, hasMore, page, totalPages, resetPosts } = useAllPosts();
@@ -299,6 +300,16 @@ function PostManagementPage() {
                 />
             )}
         </div>
+    );
+}
+
+function PostManagementPage() {
+    return (
+        <AllPostProvider>
+            <PostProvider>
+                <PostManagement />
+            </PostProvider>
+        </AllPostProvider>
     );
 }
 
