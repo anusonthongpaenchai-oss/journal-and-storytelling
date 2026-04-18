@@ -12,7 +12,7 @@ function PostPage() {
 
   return (
     <>
-      {isAuthenticated && state.user?.role === "user"
+      {isAuthenticated
         ? (<ProfileNavbarContainer />)
         : (<PublicNavbar />)
       }

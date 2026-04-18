@@ -13,6 +13,8 @@ type ProfileNavbarProps = {
   onProfile: () => void;
   onResetPassword: () => void;
   onLogout: () => void;
+  onAdminManagement?: () => void;
+  showAdminEntry?: boolean;
 };
 
 function ProfileNavbar({
@@ -24,6 +26,8 @@ function ProfileNavbar({
   onProfile,
   onResetPassword,
   onLogout,
+  onAdminManagement,
+  showAdminEntry = false,
 }: ProfileNavbarProps) {
   return (
     <nav
@@ -111,6 +115,8 @@ function ProfileNavbar({
         onResetPassword={onResetPassword}
         onLogout={onLogout}
         hasUnreadNotifications={hasUnreadNotifications}
+        onAdminManagement={onAdminManagement}
+        showAdminEntry={showAdminEntry}
       />
     </nav>
   );

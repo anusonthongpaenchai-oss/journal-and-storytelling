@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useAuth } from "@/context/AuthenticationContext";
 import { Link } from "react-router-dom";
 
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthenticationContext";
 
 type FormErrors = {
   name?: string;
@@ -13,21 +13,17 @@ type FormErrors = {
   password?: string;
 };
 
-function SignUpPage() {
-  // ===== Form State =====
+function AdminSignup() {
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ===== UI / Validation State =====
   const [isError, setIsError] = useState<FormErrors>({});
   const [notValid, setNotValid] = useState(false);
   const [isPasswordTooShort, setIsPasswordTooShort] = useState(false);
 
-  // ===== Form Validation =====
-  // Responsibility: validate input values and update error-related states
   function validate(): boolean {
     const nextErrors: FormErrors = {};
     const emailPattern =
@@ -61,11 +57,7 @@ function SignUpPage() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  // ===== Form Submission =====
-  // Responsibility: validate form and switch to registration success state
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!validate()) return;
@@ -77,7 +69,10 @@ function SignUpPage() {
       password,
     };
 
-    const result = await register(formValues);
+    const result = await register(formValues, {
+      role: "admin",
+      successRedirectTo: "/admin/register/success",
+    });
 
     if (result?.error) {
       const nextErrors: FormErrors = {};
@@ -91,34 +86,28 @@ function SignUpPage() {
       }
 
       setIsError(nextErrors);
-      return;
     }
   }
 
-
   return (
     <div className="flex flex-col items-center">
-      <PublicNavbar/>
+      <PublicNavbar />
+
       <main
         className="
-            flex flex-col items-center
-            gap-[24px] md:gap-[40px]
-            mt-[40px] md:mt-[60px]
-            w-[344px] md:w-[798px]
-            px-[16px] py-[40px]
-            md:px-[120px] md:py-[60px]
-            bg-brown-200
-            rounded-[16px]
-          "
+          mt-[60px] flex w-[798px] flex-col items-center gap-[40px]
+          rounded-[16px] bg-brown-200 px-[120px] py-[30px]
+        "
       >
-        <h1 className="w-full text-headline-2 text-center text-brown-600">
-          Sign up
-        </h1>
+        <div className="flex flex-col items-center gap-[8px]">
+          <h4 className="text-headline-4 text-orange">Admin</h4>
+          <h2 className="text-headline-2 text-brown-600">Sign up</h2>
+        </div>
 
         <form
-          id="signup-form"
+          id="admin-signup-form"
           onSubmit={handleSubmit}
-          className="flex flex-col gap-[24px] md:gap-[28px] w-full"
+          className="flex w-full flex-col gap-[28px]"
         >
           <FormInput
             label="Name"
@@ -142,14 +131,10 @@ function SignUpPage() {
             <FormInput
               label="Email"
               type="text"
-              placeholder={isError.email ?? "Email"}
+              placeholder={isError.email ?? "Admin email"}
               value={email}
               onChange={setEmail}
-              variant={
-                isError.email || notValid
-                  ? "secondary"
-                  : "primary"
-              }
+              variant={isError.email || notValid ? "secondary" : "primary"}
               autoComplete="email"
             />
 
@@ -183,21 +168,16 @@ function SignUpPage() {
           <Button
             label="Sign up"
             type="submit"
-            form="signup-form"
+            form="admin-signup-form"
             variant="primary"
             width="w-[141px]"
           />
         </div>
 
         <footer className="flex justify-center gap-[12px] text-body-1">
-          <span className="text-brown-400">
-            Already have an account?
-          </span>
+          <span className="text-brown-400">Already have an account?</span>
 
-          <Link
-            to="/login"
-            className="text-brown-600 underline"
-          >
+          <Link to="/admin/login" className="text-brown-600 underline">
             Log in
           </Link>
         </footer>
@@ -206,4 +186,4 @@ function SignUpPage() {
   );
 }
 
-export default SignUpPage;
+export default AdminSignup;

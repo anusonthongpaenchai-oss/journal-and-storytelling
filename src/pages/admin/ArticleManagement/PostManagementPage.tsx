@@ -15,16 +15,24 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { AuthGateModal } from "@/components/layout/AuthGateModal";
+import { Alert } from "@/components/feedback/Alert";
 
 import { useAuth } from "@/context/AuthenticationContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAllPosts, AllPostProvider } from "@/context/AllPostContext";
 import { PostProvider } from "@/context/PostContext";
+import { getCategories } from "@/services/categoryApi";
+
+const STATUS_STYLES: Record<string, string> = {
+    draft: "text-brand-orange",
+    publish: "text-brand-green",
+};
 
 function PostManagement() {
     const { logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const { posts, isLoading, fetchPosts, deletePost, hasMore, page, totalPages, resetPosts } = useAllPosts();
     const [allCategories, setAllCategories] = useState<string[]>([]);
     const [searchKeyword, setSearchKeyword] = useState("");
@@ -32,6 +40,7 @@ function PostManagement() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [postIdToDelete, setPostIdToDelete] = useState<string | null>(null);
     const [isDeletingPost, setIsDeletingPost] = useState(false);
+    const [successAlert, setSuccessAlert] = useState<null | { title: string; description: string }>(null);
 
     useEffect(() => {
         resetPosts();
@@ -44,16 +53,28 @@ function PostManagement() {
     }, [searchKeyword, selectedCategory, selectedStatus]);
 
     useEffect(() => {
-        if (!posts || posts.length === 0) {
+        const loadCategories = async () => {
+            try {
+                const categories = await getCategories();
+                setAllCategories(categories.map((category) => category.name));
+            } catch (error) {
+                console.error("Fetch categories failed:", error);
+            }
+        };
+
+        loadCategories();
+    }, []);
+
+    useEffect(() => {
+        const alertState = location.state as { alert?: { title: string; description: string } } | null;
+
+        if (!alertState?.alert) {
             return;
         }
 
-        const uniqueCategories = Array.from(
-            new Set(posts.map((post) => post.category).filter(Boolean))
-        );
-
-        setAllCategories((prev) => Array.from(new Set([...prev, ...uniqueCategories])));
-    }, [posts]);
+        setSuccessAlert(alertState.alert);
+        navigate(location.pathname, { replace: true, state: null });
+    }, [location.pathname, location.state, navigate]);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchKeyword(e.target.value);
@@ -84,6 +105,20 @@ function PostManagement() {
         return post.status?.toLowerCase() === selectedStatus.toLowerCase();
     });
 
+    const renderStatus = (status?: string | null) => {
+        const normalizedStatus = status?.trim().toLowerCase();
+
+        if (!normalizedStatus) {
+            return <span className="text-brown-400">-</span>;
+        }
+
+        return (
+            <span className={`whitespace-nowrap ${STATUS_STYLES[normalizedStatus] ?? "text-brown-400"}`}>
+                &#8226; {normalizedStatus}
+            </span>
+        );
+    };
+
     const handleDeletePost = async (postId: string) => {
         try {
             setIsDeletingPost(true);
@@ -108,7 +143,7 @@ function PostManagement() {
     return (
         <div className="min-h-screen bg-brown-100">
             <div className="flex flex-row">
-                <AdminSidebar onLogout={logout} end="/admin/managements" />
+                <AdminSidebar onLogout={logout} end="/admin/post-managements" />
 
                 <main className="flex-1">
                     <AdminHeader
@@ -117,7 +152,7 @@ function PostManagement() {
                         buttonLabel_1="Create article"
                         icon_1={<Plus width="24px" />}
                         variant_1="primary"
-                        onClick_1={() => navigate("/admin/create-post")} />
+                        onClick_1={() => navigate("/admin/post-managements/create-post")} />
 
                     <section className="flex flex-col px-[60px] pt-[40px] pb-[60px] gap-[12px]">
                         <div className="flex flex-row justify-between gap-[12px]">
@@ -201,14 +236,14 @@ function PostManagement() {
                                                 w-[120px] align-middle text-body-1 text-brown-600">
                                                     {post.category}
                                                 </td>
-                                                <td className="px-[24px] py-[20px] h-[64px] w-[160px] align-middle text-body-1 text-brand-green whitespace-nowrap">
-                                                    &#8226; {post.status}
+                                                <td className="px-[24px] py-[20px] h-[64px] w-[160px] align-middle text-body-1">
+                                                    {renderStatus(post.status)}
                                                 </td>
                                                 <td className="px-[24px] py-[20px] h-[64px] align-middle">
                                                     <div className="flex items-center justify-end gap-[20px] text-brown-400">
                                                         <button
                                                             type="button"
-                                                            onClick={() => navigate(`/admin/edit-post/${post.id}`)}
+                                                            onClick={() => navigate(`/admin/post-managements/edit-post/${post.id}`)}
                                                             className="hover:text-brown-600"
                                                             aria-label={`Edit ${post.title}`}
                                                         >
@@ -298,6 +333,17 @@ function PostManagement() {
                         setPostIdToDelete(null);
                     }}
                 />
+            )}
+            {successAlert && (
+                <div className="sticky bottom-2 z-50 px-2 md:fixed md:bottom-6 md:right-6 md:w-[580px]">
+                    <Alert
+                        title={successAlert.title}
+                        description={successAlert.description}
+                        variant="primary"
+                        timeout={3000}
+                        onClose={() => setSuccessAlert(null)}
+                    />
+                </div>
             )}
         </div>
     );

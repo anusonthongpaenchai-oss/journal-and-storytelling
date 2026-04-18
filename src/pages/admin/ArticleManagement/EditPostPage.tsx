@@ -19,6 +19,7 @@ import {
 import { LoadingScreen } from "@/components/ui/LodingScreen";
 import { ImageIcon, Trash2 } from "lucide-react";
 import { AuthGateModal } from "@/components/layout/AuthGateModal";
+import { getCategories } from "@/services/categoryApi";
 
 type PostData = {
     id: string;
@@ -29,7 +30,7 @@ type PostData = {
     category: string;
     // author is just a string in UI
     author: string;
-    status: number;
+    status_id: 1 | 2;
     // Use string for image preview
     image?: string;
 };
@@ -39,7 +40,7 @@ function EditPostContent() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const { post, isLoading, fetchPost, updatePost } = usePost(); // Use context
-    const { posts: allPosts, fetchPosts: fetchAllPosts, deletePost } = useAllPosts(); // Use AllPostContext for categories and delete
+    const { deletePost } = useAllPosts(); // Use AllPostContext for delete
 
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -52,33 +53,25 @@ function EditPostContent() {
         content: "",
         category: "",
         author: "",
-        status: 1, // Default to draft (assuming 1 is draft)
+        status_id: 1,
         image: "",
     });
 
     const [imageFile, setImageFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Mock categories or fetch from somewhere. User code used `postCategories` which was undefined.
-    // I will define it here.
-    const hasFetchedCategories = useRef(false);
-
-    // Fetch all posts to extract categories
     useEffect(() => {
-        if (!hasFetchedCategories.current) {
-            fetchAllPosts({ page: 1, limit: 1000 }); // Fetch large number to ensure we get all unique categories
-            hasFetchedCategories.current = true;
-        }
-    }, [fetchAllPosts]);
+        const loadCategories = async () => {
+            try {
+                const categories = await getCategories();
+                setPostCategories(categories.map((category) => category.name));
+            } catch (error) {
+                console.error("Fetch categories failed:", error);
+            }
+        };
 
-    useEffect(() => {
-        if (allPosts) {
-            const uniqueCategories = Array.from(
-                new Set(allPosts.map((p) => p.category).filter(Boolean)),
-            );
-            setPostCategories(uniqueCategories);
-        }
-    }, [allPosts]);
+        loadCategories();
+    }, []);
 
     useEffect(() => {
         if (id) {
@@ -95,7 +88,12 @@ function EditPostContent() {
                 content: post.content || "",
                 category: post.category || "",
                 author: post.author || "",
-                status: 1,
+                status_id:
+                    post.status_id === 1 || post.status_id === 2
+                        ? post.status_id
+                        : post.status === "publish"
+                            ? 2
+                            : 1,
                 image: post.image || "",
             });
         }
@@ -109,15 +107,15 @@ function EditPostContent() {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
         if (!allowedTypes.includes(file.type)) {
-            alert("Invalid file type. Please upload an image.");
+            alert("Invalid file type. Please upload JPG or PNG.");
             return;
         }
 
-        const maxSize = 5 * 1024 * 1024;
+        const maxSize = 15 * 1024 * 1024;
         if (file.size > maxSize) {
-            alert("File size too large. Max 5MB.");
+            alert("File size too large. Max 15MB.");
             return;
         }
 
@@ -128,7 +126,7 @@ function EditPostContent() {
         }));
     }
 
-    const handleSave = async (status: 1 | 2) => {
+    const handleSave = async (statusId: 1 | 2) => {
         if (!id) return;
         setIsSaving(true);
         try {
@@ -136,33 +134,35 @@ function EditPostContent() {
 
             if (imageFile) {
                 const formDataPayload = new FormData();
-                // Append all fields to FormData
-                // Note: We need to match the backend expectation. 
-                // Assuming backend updates fields present in FormData.
-                // We exclude 'id' from body if it's in URL, but updatePost context might use it?
-                // updatePost uses URL param for ID.
                 formDataPayload.append("title", formData.title);
                 formDataPayload.append("description", formData.description);
                 formDataPayload.append("content", formData.content);
                 formDataPayload.append("category", formData.category);
-                formDataPayload.append("author", formData.author);
-                formDataPayload.append("status", String(status));
-                formDataPayload.append("image", imageFile);
+                formDataPayload.append("status_id", String(statusId));
+                formDataPayload.append("imageFile", imageFile);
                 payload = formDataPayload;
             } else {
                 payload = {
-                    ...formData,
-                    status,
+                    title: formData.title,
+                    description: formData.description,
+                    content: formData.content,
+                    category: formData.category,
+                    image: formData.image,
+                    status_id: statusId,
                 };
-            }
-            if (!(payload instanceof FormData)) {
-                (payload as any).status = String(status);
             }
 
             await updatePost(id, payload as any);
-
-            alert(`Post saved!`);
-            navigate("/admin/managements");
+            navigate("/admin/post-managements", {
+                state: {
+                    alert: {
+                        title: statusId === 1 ? "Article saved as draft" : "Article published",
+                        description: statusId === 1
+                            ? "You can publish article later"
+                            : "Your article is now live",
+                    },
+                },
+            });
         } catch (error) {
             console.error("Failed to save post", error);
         } finally {
@@ -176,7 +176,7 @@ function EditPostContent() {
         try {
             await deletePost(id);
             setIsDeleteModalOpen(false);
-            navigate("/admin/managements");
+            navigate("/admin/post-managements");
         } catch (error) {
             console.error("Failed to delete post", error);
             alert("Failed to delete post");
@@ -192,19 +192,19 @@ function EditPostContent() {
     return (
         <div className="min-h-screen bg-brown-200">
             <div className="flex flex-row">
-                <AdminSidebar onLogout={logout} end="/admin/managements" />
+                <AdminSidebar onLogout={logout} end="/admin/post-managements" />
 
                 <main className="flex-1">
                     <AdminHeader
                         title="Edit article"
                         button_1={true}
-                        buttonLabel_1={isSaving ? "Saving..." : "Save as draft"}
+                        buttonLabel_1="Cancel"
                         variant_1="secondary"
-                        onClick_1={() => handleSave(1)}
-                        button_2={true}
-                        buttonLabel_2={isSaving ? "Publishing..." : "Save and publish"}
-                        variant_2="primary"
-                        onClick_2={() => handleSave(2)}
+                        onClick_1={() => navigate("/admin/post-managements")}
+                        button_2={false}
+                        buttonLabel_2=""
+                        variant_2="secondary"
+                        onClick_2={() => {}}
                     />
 
                     <section className="flex flex-col px-[60px] py-[40px] gap-[40px] bg-white h-full">
@@ -320,7 +320,25 @@ function EditPostContent() {
                                 Delete article
                             </button>
                         </div>
+
+                        <div className="flex justify-end gap-[8px]">
+                            <Button
+                                label={isSaving ? "Saving..." : "Save as draft"}
+                                variant="secondary"
+                                width="w-auto"
+                                onClick={() => handleSave(1)}
+                                disabled={isSaving}
+                            />
+                            <Button
+                                label={isSaving ? "Publishing..." : "Save and publish"}
+                                variant="primary"
+                                width="w-auto"
+                                onClick={() => handleSave(2)}
+                                disabled={isSaving}
+                            />
+                        </div>
                     </section>
+
                 </main>
             </div>
 

@@ -20,7 +20,7 @@ type SidebarItem = {
 
 const sidebarItems: SidebarItem[] = [
     {
-        to: "/admin/managements",
+        to: "/admin/post-managements",
         label: "Article management",
         icon: <Notebook size={24} strokeWidth={1}/>,
     },
@@ -65,7 +65,7 @@ function AdminSidebar({ onLogout, end }: AdminSidebarProps) {
                         <NavLink
                             key={item.to}
                             to={item.to}
-                            end={item.to === `${end}`}
+                            end={item.to !== end}
                             className={({ isActive }) =>
                                 `flex items-center gap-[12px] px-[24px] py-[20px] text-body-1 ${isActive
                                     ? "bg-brown-300 text-brown-500"

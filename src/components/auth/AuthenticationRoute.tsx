@@ -7,6 +7,10 @@ import { LoadingScreen } from "@/components/ui/LodingScreen";
 interface AuthenticationRouteProps {
   isLoading: boolean | null;
   isAuthenticated: boolean;
+  userRole?: string | null;
+  requiredRole?: string;
+  redirectTo?: string;
+  fallbackRedirectTo?: string;
   children: ReactNode;
 }
 
@@ -15,9 +19,13 @@ interface AuthenticationRouteProps {
 function AuthenticationRoute({
   isLoading,
   isAuthenticated,
+  userRole,
+  requiredRole,
+  redirectTo = "/",
+  fallbackRedirectTo = "/",
   children,
 }: AuthenticationRouteProps) {
-  if (isLoading === null || isLoading) {
+  if (isLoading === null || (isLoading && !isAuthenticated)) {
     return (
       <div className="flex flex-col min-h-screen">
         <div className="min-h-screen md:p-8">
@@ -28,7 +36,11 @@ function AuthenticationRoute({
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    if (requiredRole && userRole !== requiredRole) {
+      return <Navigate to={fallbackRedirectTo} replace />;
+    }
+
+    return <Navigate to={redirectTo} replace />;
   }
 
   return <>{children}</>;

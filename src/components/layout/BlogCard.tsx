@@ -7,10 +7,13 @@ interface BlogCardProps {
   title: string;
   description: string;
   author: string;
-  authorAvatar: string;
+  authorAvatar?: string | null;
   date: string;
   likes: number;
 }
+
+const DEFAULT_AUTHOR_AVATAR =
+  "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 export function BlogCardDesktop({
   id,
@@ -23,6 +26,8 @@ export function BlogCardDesktop({
   date,
   likes,
 }: BlogCardProps) {
+  const avatarUrl = authorAvatar || DEFAULT_AUTHOR_AVATAR;
+
   return (
     <article
       className="
@@ -116,7 +121,7 @@ export function BlogCardDesktop({
             "
           >
             <img
-              src={authorAvatar}
+              src={avatarUrl}
               alt={author}
               className="
                 w-[24px] h-[24px]
@@ -150,6 +155,8 @@ export function BlogCardMobile({
   date,
   likes,
 }: BlogCardProps) {
+  const avatarUrl = authorAvatar || DEFAULT_AUTHOR_AVATAR;
+
   return (
     <article
       className="
@@ -239,7 +246,7 @@ export function BlogCardMobile({
             "
           >
             <img
-              src={authorAvatar}
+              src={avatarUrl}
               alt={author}
               className="
                 w-[24px] h-[24px]

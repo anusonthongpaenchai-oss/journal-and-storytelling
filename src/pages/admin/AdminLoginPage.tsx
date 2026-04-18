@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { Alert } from "@/components/feedback/Alert";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
-import { Alert } from "@/components/feedback/Alert";
 import { useAuth } from "@/context/AuthenticationContext";
+import { getPostLogoutAlert, type PostLogoutAlert } from "@/utils/postLogoutAlert";
 
 type FormErrors = {
   email?: boolean;
@@ -13,19 +14,31 @@ type FormErrors = {
 };
 
 function AdminLoginPage() {
-  // ===== Form State =====
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ===== UI State =====
-  const [isAlert, setIsAlert] = useState(false);
+  const [alert, setAlert] = useState<PostLogoutAlert | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
 
   const { login } = useAuth();
 
-  // ===== Form Validation =====
-  // Responsibility: validate credentials and update error state
+  useEffect(() => {
+    const storedAlert = getPostLogoutAlert();
+
+    if (storedAlert) {
+      setAlert(storedAlert);
+    }
+  }, []);
+
+  function showInvalidCredentialAlert() {
+    setAlert({
+      title: "Your password is incorrect or this email doesn't exist",
+      description: "Please try another email or password",
+      variant: "secondary",
+    });
+  }
+
   function validate(): boolean {
     const nextErrors: FormErrors = {};
     let hasError = false;
@@ -49,8 +62,6 @@ function AdminLoginPage() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  // ===== Form Submission =====
-  // Responsibility: prevent duplicate submit, validate credentials, and login
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -59,30 +70,37 @@ function AdminLoginPage() {
     setIsSubmitting(true);
 
     if (!validate()) {
-      setIsAlert(true);
+      showInvalidCredentialAlert();
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const result = await login({ email, password });
+      const result = await login(
+        { email, password },
+        {
+          role: "admin",
+          redirectTo: "/admin/post-managements",
+        }
+      );
 
       if (result?.error) {
         setIsError({
           email: true,
           password: true,
         });
-        setIsAlert(true);
+        showInvalidCredentialAlert();
         return;
       }
 
       setIsError({});
-    } catch (error) {
+      setAlert(null);
+    } catch {
       setIsError({
         email: true,
         password: true,
       });
-      setIsAlert(true);
+      showInvalidCredentialAlert();
     } finally {
       setIsSubmitting(false);
     }
@@ -90,33 +108,28 @@ function AdminLoginPage() {
 
   return (
     <div className="flex flex-col items-center">
-      <PublicNavbar/>
+      <PublicNavbar />
 
       <main
         className="
-          flex flex-col items-center
-          gap-[24px] md:gap-[40px]
-          mt-[40px] md:mt-[60px]
-          w-[344px] md:w-[798px]
-          px-[16px] py-[40px]
-          md:px-[120px] md:py-[60px]
-          bg-brown-200
-          rounded-[16px]
+          mt-[60px] flex w-[798px] flex-col items-center gap-[40px]
+          rounded-[16px] bg-brown-200 px-[120px] py-[60px]
         "
       >
-        <h1 className="text-headline-2 text-brown-600">
-          Log in
-        </h1>
+        <div className="flex flex-col items-center gap-[8px]">
+          <h4 className="text-headline-4 text-orange">Admin</h4>
+          <h2 className="text-headline-2 text-brown-600">Log in</h2>
+        </div>
 
         <form
-          id="login-form"
+          id="admin-login-form"
           onSubmit={handleSubmit}
-          className="flex flex-col gap-[24px] md:gap-[28px] w-full"
+          className="flex w-full flex-col gap-[28px]"
         >
           <FormInput
             label="Email"
             type="email"
-            placeholder="Email"
+            placeholder="Admin email"
             autoComplete="email"
             value={email}
             variant={isError.email ? "secondary" : "primary"}
@@ -137,33 +150,28 @@ function AdminLoginPage() {
         <Button
           label="Log in"
           type="submit"
-          form="login-form"
+          form="admin-login-form"
           variant="primary"
           width="w-[127px]"
           disabled={isSubmitting}
         />
 
         <footer className="flex gap-[12px] text-body-1">
-          <span className="text-brown-400">
-            Don’t have any account?
-          </span>
+          <span className="text-brown-400">Don't have any admin account?</span>
 
-          <Link
-            to="/signup"
-            className="text-brown-600 underline"
-          >
+          <Link to="/admin/register" className="text-brown-600 underline">
             Sign up
           </Link>
         </footer>
       </main>
 
-      {isAlert && (
-        <div className="hidden md:flex fixed bottom-6 right-6 z-50">
+      {alert && (
+        <div className="fixed bottom-6 right-6 z-50 flex">
           <Alert
-            title="Your password is incorrect or this email doesn’t exist"
-            description="Please try another password or email"
-            variant="secondary"
-            onClose={() => setIsAlert(false)}
+            title={alert.title}
+            description={alert.description}
+            variant={alert.variant}
+            onClose={() => setAlert(null)}
             timeout={3000}
           />
         </div>
@@ -172,4 +180,4 @@ function AdminLoginPage() {
   );
 }
 
-export default AdminLoginPage();
+export default AdminLoginPage;

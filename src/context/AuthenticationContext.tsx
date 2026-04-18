@@ -18,6 +18,7 @@ interface User {
     email?: string;
     role?: string;
     profilePic?: string;
+    bio?: string;
 }
 
 interface AuthState {
@@ -37,10 +38,22 @@ interface GetUserResponse {
     data?: User;
 }
 
+interface AuthActionOptions {
+    role?: "user" | "admin";
+    redirectTo?: string;
+    successRedirectTo?: string;
+}
+
 interface AuthContextValue {
     state: AuthState;
-    login: (data: unknown) => Promise<{ error?: string } | void>;
-    register: (data: unknown) => Promise<{ error?: string } | void>;
+    login: (
+        data: unknown,
+        options?: AuthActionOptions
+    ) => Promise<{ error?: string } | void>;
+    register: (
+        data: unknown,
+        options?: AuthActionOptions
+    ) => Promise<{ error?: string } | void>;
     logout: () => void;
     fetchUser: () => Promise<boolean>;
     isAuthenticated: boolean;
@@ -131,7 +144,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     /* ============ Login ============ */
 
     const login = async (
-        data: unknown
+        data: unknown,
+        options?: AuthActionOptions
     ): Promise<{ error?: string } | void> => {
         try {
             setState((prev) => ({
@@ -140,8 +154,13 @@ function AuthProvider({ children }: AuthProviderProps) {
                 error: null,
             }));
 
+            const loginPath =
+                options?.role === "admin"
+                    ? "/auth/admin/login"
+                    : "/auth/login";
+
             const response = await axios.post<LoginResponse>(
-                `${API_BASE_URL}/auth/login`,
+                `${API_BASE_URL}${loginPath}`,
                 data
             );
 
@@ -155,7 +174,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
             const userFetched = await fetchUser();
             if (userFetched) {
-                navigate("/");
+                navigate(options?.redirectTo ?? "/");
                 return;
             }
 
@@ -183,7 +202,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     /* ============ Register ============ */
 
     const register = async (
-        data: unknown
+        data: unknown,
+        options?: AuthActionOptions
     ): Promise<{ error?: string } | void> => {
         try {
             setState((prev) => ({
@@ -192,14 +212,19 @@ function AuthProvider({ children }: AuthProviderProps) {
                 error: null,
             }));
 
-            await axios.post(`${API_BASE_URL}/auth/register`, data);
+            const registerPath =
+                options?.role === "admin"
+                    ? "/auth/admin/register"
+                    : "/auth/register";
+
+            await axios.post(`${API_BASE_URL}${registerPath}`, data);
 
             setState((prev) => ({
                 ...prev,
                 loading: false,
             }));
 
-            navigate("/signup/success");
+            navigate(options?.successRedirectTo ?? "/signup/success");
         } catch (error) {
             const err = error as AxiosError<{ error: string }>;
 

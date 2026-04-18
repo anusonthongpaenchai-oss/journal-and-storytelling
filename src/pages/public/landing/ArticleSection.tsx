@@ -7,7 +7,7 @@ import { formatDate } from "@/utils/formatDate";
 import { usePostAutocomplete } from "@/hooks/usePostAutocomplete";
 import { useNavigate } from "react-router-dom";
 import { useAllPosts } from "@/context/AllPostContext";
-import { useRef } from "react";
+import { getCategories } from "@/services/categoryApi";
 
 /* ================= Component ================= */
 
@@ -16,7 +16,6 @@ export default function ArticleSection() {
   const [selectedCategory, setSelectedCategory] = useState<string>("Highlight");
   const [allCategories, setAllCategories] = useState<string[]>(["Highlight"]);
   const { query, setQuery, suggestions } = usePostAutocomplete(posts);
-  const hasInitCategories = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,22 +27,17 @@ export default function ArticleSection() {
   }, [selectedCategory]);
 
   useEffect(() => {
-    if (
-      hasInitCategories.current ||
-      !posts ||
-      posts.length === 0 ||
-      selectedCategory !== "Highlight"
-    ) {
-      return;
-    }
+    const loadCategories = async () => {
+      try {
+        const categories = await getCategories();
+        setAllCategories(["Highlight", ...categories.map((category) => category.name)]);
+      } catch (error) {
+        console.error("Fetch categories failed:", error);
+      }
+    };
 
-    const uniqueCategories = Array.from(
-      new Set(posts.map((post) => post.category))
-    );
-
-    setAllCategories(["Highlight", ...uniqueCategories]);
-    hasInitCategories.current = true;
-  }, [posts, selectedCategory]);
+    loadCategories();
+  }, []);
 
 
   const visiblePosts = posts ?? [];
@@ -100,7 +94,7 @@ export default function ArticleSection() {
                   title={post.title}
                   description={post.description}
                   author={post.author}
-                  authorAvatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
+                  authorAvatar={post.authorProfilePic}
                   likes={post.likes_count ?? 0}
                   date={formatDate(post.date)}
                 />
@@ -173,7 +167,7 @@ export default function ArticleSection() {
                 title={blog.title}
                 description={blog.description}
                 author={blog.author}
-                authorAvatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
+                authorAvatar={blog.authorProfilePic}
                 likes={blog.likes_count ?? 0}
                 date={formatDate(blog.date)}
               />

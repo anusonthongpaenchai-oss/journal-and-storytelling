@@ -15,6 +15,11 @@ type Post = {
   date: string;
   likes: number;
   likes_count?: number;
+  status?: string | null;
+  status_id?: number | null;
+  author_id?: string | null;
+  authorProfilePic?: string | null;
+  authorBio?: string | null;
 };
 
 type PostContextValue = {

@@ -10,8 +10,10 @@ type Post = {
   description: string;
   content: string;
   category: string;
-  status: string;
+  status?: string | null;
   author: string;
+  author_id?: string | null;
+  authorProfilePic?: string | null;
   date: string;
   image?: string;
   likes_count?: number;
