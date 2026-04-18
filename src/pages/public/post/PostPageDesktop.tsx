@@ -35,6 +35,8 @@ type Comment = {
 
 const DEFAULT_COMMENT_AVATAR =
   "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+const DEFAULT_AUTHOR_AVATAR =
+  "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 function getLikeStorageKey(postId?: string, userId?: string) {
   return postId && userId ? `post-liked:${userId}:${postId}` : "";
@@ -59,6 +61,14 @@ function PostPageDesktop() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const { post, isLoading, fetchPost } = usePost();
+  const authorCardData =
+    post?.author_id && post.authorBio?.trim()
+      ? {
+          avatar: post.authorProfilePic || DEFAULT_AUTHOR_AVATAR,
+          name: post.author?.trim() || "Unknown author",
+          bio: post.authorBio?.trim() || "",
+        }
+      : null;
 
   function requireAuth(action?: () => void | Promise<void>) {
     const hasToken = Boolean(localStorage.getItem("token"));
@@ -94,21 +104,18 @@ function PostPageDesktop() {
         const likeDecrementPatchUrl =
           `${API_BASE_URL}/posts/${post.id}/likes-count/decrement`;
 
-        await axios.patch(likeDecrementPatchUrl);
-        setLikesCount((prev) => Math.max(prev - 1, 0));
+        const { data } = await axios.patch<{ likesCount?: number }>(likeDecrementPatchUrl);
+        setLikesCount(data.likesCount ?? Math.max(likesCount - 1, 0));
         setIsLiked(false);
         setHasLikeInteracted(true);
         if (likeStorageKey) {
           localStorage.setItem(likeStorageKey, "false");
         }
       } else {
-        const nextLikeCount = likesCount + 1;
         const likePatchUrl = `${API_BASE_URL}/posts/${post.id}/likes-count`;
 
-        await axios.patch(likePatchUrl, {
-          likes_count: nextLikeCount,
-        });
-        setLikesCount(nextLikeCount);
+        const { data } = await axios.patch<{ likesCount?: number }>(likePatchUrl);
+        setLikesCount(data.likesCount ?? likesCount + 1);
         setIsLiked(true);
         setHasLikeInteracted(true);
         if (likeStorageKey) {
@@ -430,13 +437,13 @@ function PostPageDesktop() {
                 md:sticky md:top-[96px]
               "
             >
-              <AuthorCard
-                avatar="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                name={post.author}
-                bio="I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.
-
-                When i’m not writing, I spends time volunteering at my local animal shelter, helping cats find loving homes."
-              />
+              {authorCardData ? (
+                <AuthorCard
+                  avatar={authorCardData.avatar}
+                  name={authorCardData.name}
+                  bio={authorCardData.bio}
+                />
+              ) : null}
             </aside>
           </div>
         </div>
@@ -452,3 +459,4 @@ function PostPageDesktop() {
 }
 
 export default PostPageDesktop;
+

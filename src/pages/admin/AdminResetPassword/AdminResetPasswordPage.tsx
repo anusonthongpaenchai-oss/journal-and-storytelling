@@ -1,12 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
 
-import ProfileTemplate from "./ProfileTemplate";
-import ResetPasswordFormCard from "./resetPassword/ResetPasswordFormCard";
-import ConfirmDialog from "@/components/layout/ConfirmDialog";
+import AdminSidebar from "@/components/Admin/AdminSidebar";
 import { Alert } from "@/components/feedback/Alert";
-import { setPostLogoutAlert } from "@/utils/postLogoutAlert";
+import ConfirmDialog from "@/components/layout/ConfirmDialog";
 import { useAuth } from "@/context/AuthenticationContext";
+import { setPostLogoutAlert } from "@/utils/postLogoutAlert";
+
+import AdminResetPasswordForm from "./AdminResetPasswordForm";
 
 type FormErrors = {
   currentPassword?: boolean;
@@ -20,20 +21,19 @@ type Feedback = {
   variant: "primary" | "secondary";
 };
 
-function ResetPasswordPage() {
+function AdminResetPasswordPage() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const { state } = useAuth();
+  const { logout } = useAuth();
 
   const [isConfirm, setIsConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
   const [feedback, setFeedback] = useState<Feedback | null>(null);
-
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  function validate(): boolean {
+  function validate() {
     const nextErrors: FormErrors = {};
 
     if (!currentPassword.trim()) {
@@ -82,7 +82,7 @@ function ResetPasswordPage() {
         variant: "primary",
       });
       window.localStorage.removeItem("token");
-      window.location.assign(state.user?.role === "admin" ? "/admin/login" : "/login");
+      window.location.assign("/admin/login");
       return;
     } catch (error) {
       let message = "Please try again later.";
@@ -111,30 +111,33 @@ function ResetPasswordPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
     if (!validate()) return;
+
     setIsConfirm(true);
   }
 
   return (
-    <div className="flex flex-col">
-      <ProfileTemplate
-        component={
-          <ResetPasswordFormCard
-            isError={isError}
+    <div className="min-h-screen bg-brown-100">
+      <div className="flex flex-row">
+        <AdminSidebar onLogout={logout} end="/admin/reset-password" />
+
+        <main className="flex-1">
+          <AdminResetPasswordForm
             currentPassword={currentPassword}
-            setCurrentPassword={setCurrentPassword}
             newPassword={newPassword}
-            setNewPassword={setNewPassword}
             confirmPassword={confirmPassword}
-            setConfirmPassword={setConfirmPassword}
-            onSubmit={handleSubmit}
+            isError={isError}
             isSubmitting={isSubmitting}
+            onCurrentPasswordChange={setCurrentPassword}
+            onNewPasswordChange={setNewPassword}
+            onConfirmPasswordChange={setConfirmPassword}
+            onSubmit={handleSubmit}
           />
-        }
-        title="Reset password"
-      />
+        </main>
+      </div>
 
       {isConfirm && (
         <ConfirmDialog
@@ -150,14 +153,7 @@ function ResetPasswordPage() {
       )}
 
       {feedback && (
-        <div
-          className="
-            sticky bottom-2
-            px-2
-            z-50
-            md:fixed md:bottom-6 md:right-6
-          "
-        >
+        <div className="fixed bottom-6 right-6 z-50 w-[580px]">
           <Alert
             title={feedback.title}
             description={feedback.description}
@@ -171,4 +167,4 @@ function ResetPasswordPage() {
   );
 }
 
-export default ResetPasswordPage;
+export default AdminResetPasswordPage;

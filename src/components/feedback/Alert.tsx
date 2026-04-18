@@ -39,6 +39,7 @@ export function Alert({
         <div
             className={`
         flex
+        items-start
         gap-[12px]
         p-[16px]
         w-full
@@ -51,6 +52,7 @@ export function Alert({
           flex
           flex-col
           gap-[4px]
+          flex-1
         "
             >
                 <span className="text-headline-4">
@@ -68,6 +70,8 @@ export function Alert({
           flex
           items-center justify-center
           w-6 h-6
+          ml-auto
+          shrink-0
           text-white/80
           hover:text-white
         "

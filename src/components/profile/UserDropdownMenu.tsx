@@ -1,16 +1,20 @@
-import { User, RotateCcw, LogOut } from "lucide-react";
+import { User, RotateCcw, LogOut, Shield } from "lucide-react";
 import { ProfileMenuItem } from "./ProfileMenuItem";
 
 type UserDropdownMenuProps = {
   onProfile: () => void;
   onResetPassword: () => void;
   onLogout: () => void;
+  onAdminManagement?: () => void;
+  showAdminEntry?: boolean;
 };
 
 export function UserDropdownMenu({
   onProfile,
   onResetPassword,
   onLogout,
+  onAdminManagement,
+  showAdminEntry = false,
 }: UserDropdownMenuProps) {
   return (
     <div
@@ -35,6 +39,14 @@ export function UserDropdownMenu({
         label="Reset password"
         onClick={onResetPassword}
       />
+
+      {showAdminEntry && onAdminManagement && (
+        <ProfileMenuItem
+          icon={<Shield className="w-[24px] h-[24px] text-brown-400" />}
+          label="Admin"
+          onClick={onAdminManagement}
+        />
+      )}
 
       <div className="h-px bg-brown-300" />
 

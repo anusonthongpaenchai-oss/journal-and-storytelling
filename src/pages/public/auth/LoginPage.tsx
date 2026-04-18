@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import PublicNavbar from "@/components/layout/PublicNavbar";
@@ -6,6 +6,7 @@ import { FormInput } from "@/components/layout/FormInput";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/feedback/Alert";
 import { useAuth } from "@/context/AuthenticationContext";
+import { getPostLogoutAlert, type PostLogoutAlert } from "@/utils/postLogoutAlert";
 
 type FormErrors = {
   email?: boolean;
@@ -13,19 +14,31 @@ type FormErrors = {
 };
 
 function LoginPage() {
-  // ===== Form State =====
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ===== UI State =====
-  const [isAlert, setIsAlert] = useState(false);
+  const [alert, setAlert] = useState<PostLogoutAlert | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState<FormErrors>({});
 
   const { login } = useAuth();
 
-  // ===== Form Validation =====
-  // Responsibility: validate credentials and update error state
+  useEffect(() => {
+    const storedAlert = getPostLogoutAlert();
+
+    if (storedAlert) {
+      setAlert(storedAlert);
+    }
+  }, []);
+
+  function showInvalidCredentialAlert() {
+    setAlert({
+      title: "Your password is incorrect or this email doesn't exist",
+      description: "Please try another password or email",
+      variant: "secondary",
+    });
+  }
+
   function validate(): boolean {
     const nextErrors: FormErrors = {};
     let hasError = false;
@@ -49,8 +62,6 @@ function LoginPage() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  // ===== Form Submission =====
-  // Responsibility: prevent duplicate submit, validate credentials, and login
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -59,7 +70,7 @@ function LoginPage() {
     setIsSubmitting(true);
 
     if (!validate()) {
-      setIsAlert(true);
+      showInvalidCredentialAlert();
       setIsSubmitting(false);
       return;
     }
@@ -72,17 +83,18 @@ function LoginPage() {
           email: true,
           password: true,
         });
-        setIsAlert(true);
+        showInvalidCredentialAlert();
         return;
       }
 
       setIsError({});
-    } catch (error) {
+      setAlert(null);
+    } catch {
       setIsError({
         email: true,
         password: true,
       });
-      setIsAlert(true);
+      showInvalidCredentialAlert();
     } finally {
       setIsSubmitting(false);
     }
@@ -90,7 +102,7 @@ function LoginPage() {
 
   return (
     <div className="flex flex-col items-center">
-      <PublicNavbar/>
+      <PublicNavbar />
 
       <main
         className="
@@ -104,14 +116,12 @@ function LoginPage() {
           rounded-[16px]
         "
       >
-        <h1 className="text-headline-2 text-brown-600">
-          Log in
-        </h1>
+        <h1 className="text-headline-2 text-brown-600">Log in</h1>
 
         <form
           id="login-form"
           onSubmit={handleSubmit}
-          className="flex flex-col gap-[24px] md:gap-[28px] w-full"
+          className="flex w-full flex-col gap-[24px] md:gap-[28px]"
         >
           <FormInput
             label="Email"
@@ -144,26 +154,21 @@ function LoginPage() {
         />
 
         <footer className="flex gap-[12px] text-body-1">
-          <span className="text-brown-400">
-            Don’t have any account?
-          </span>
+          <span className="text-brown-400">Don't have any account?</span>
 
-          <Link
-            to="/signup"
-            className="text-brown-600 underline"
-          >
+          <Link to="/signup" className="text-brown-600 underline">
             Sign up
           </Link>
         </footer>
       </main>
 
-      {isAlert && (
+      {alert && (
         <div className="hidden md:flex fixed bottom-6 right-6 z-50">
           <Alert
-            title="Your password is incorrect or this email doesn’t exist"
-            description="Please try another password or email"
-            variant="secondary"
-            onClose={() => setIsAlert(false)}
+            title={alert.title}
+            description={alert.description}
+            variant={alert.variant}
+            onClose={() => setAlert(null)}
             timeout={3000}
           />
         </div>

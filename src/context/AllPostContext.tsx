@@ -10,7 +10,10 @@ type Post = {
   description: string;
   content: string;
   category: string;
+  status?: string | null;
   author: string;
+  author_id?: string | null;
+  authorProfilePic?: string | null;
   date: string;
   image?: string;
   likes_count?: number;
@@ -21,14 +24,17 @@ type FetchPostOptions = {
   limit?: number;
   category?: string;
   keyword?: string;
+  status?: string;
 };
 
 type AllPostContextValue = {
   posts: Post[];
   isLoading: boolean;
   page: number;
+  totalPages: number;
   hasMore: boolean;
   fetchPosts: (options?: FetchPostOptions) => Promise<void>;
+  deletePost: (id: string) => Promise<void>;
   resetPosts: () => void;
 };
 
@@ -42,6 +48,7 @@ export function AllPostProvider({ children }: { children: ReactNode }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -68,6 +75,7 @@ export function AllPostProvider({ children }: { children: ReactNode }) {
             limit,
             category: options?.category,
             keyword: options?.keyword,
+            status: options?.status,
           },
         });
 
@@ -82,6 +90,7 @@ export function AllPostProvider({ children }: { children: ReactNode }) {
         );
 
         setPage(currentPage);
+        setTotalPages(totalPages ?? 1);
         setHasMore(currentPage < totalPages);
       } catch (err) {
         console.error(err);
@@ -97,7 +106,19 @@ export function AllPostProvider({ children }: { children: ReactNode }) {
   const resetPosts = () => {
     setPosts([]);
     setPage(1);
+    setTotalPages(1);
     setHasMore(true);
+  };
+
+  const deletePost = async (id: string) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/posts/${id}`);
+      setPosts((prev) => prev.filter((post) => post.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete post");
+      throw err;
+    }
   };
 
   return (
@@ -106,8 +127,10 @@ export function AllPostProvider({ children }: { children: ReactNode }) {
         posts,
         isLoading,
         page,
+        totalPages,
         hasMore,
         fetchPosts,
+        deletePost,
         resetPosts,
       }}
     >

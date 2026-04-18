@@ -15,6 +15,25 @@ export function NotificationList({
   items,
   onItemClick,
 }: NotificationListProps) {
+  if (items.length === 0) {
+    return (
+      <div
+        className="
+          flex flex-col
+          w-[362px]
+          gap-[16px]
+          px-[16px] py-[20px]
+          bg-brown-100
+          rounded-[12px]
+          shadow-lg
+          overflow-hidden
+        "
+      >
+        <span className="text-body-2 text-brown-400">No notifications yet.</span>
+      </div>
+    );
+  }
+
   return (
     <div
       className="

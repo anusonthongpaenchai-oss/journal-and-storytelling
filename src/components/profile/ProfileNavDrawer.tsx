@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, User, RotateCcw, LogOut, Bell } from "lucide-react";
+import { Menu, User, RotateCcw, LogOut, Bell, Shield } from "lucide-react";
 
 import { ProfileMenuItem } from "./ProfileMenuItem";
 
@@ -11,6 +11,8 @@ type ProfileNavDrawerProps = {
   name: string;
   onNotificationClick?: () => void;
   hasUnreadNotifications?: boolean;
+  onAdminManagement?: () => void;
+  showAdminEntry?: boolean;
 };
 
 function ProfileNavDrawer({
@@ -21,6 +23,8 @@ function ProfileNavDrawer({
   name,
   onNotificationClick,
   hasUnreadNotifications,
+  onAdminManagement,
+  showAdminEntry = false,
 }: ProfileNavDrawerProps) {
   const [open, setOpen] = useState(false);
 
@@ -121,6 +125,14 @@ function ProfileNavDrawer({
           label="Reset password"
           onClick={onResetPassword}
         />
+
+        {showAdminEntry && onAdminManagement && (
+          <ProfileMenuItem
+            icon={<Shield className="w-[24px] h-[24px] text-brown-400" />}
+            label="Admin"
+            onClick={onAdminManagement}
+          />
+        )}
 
         <div className="w-full h-px bg-brown-300" />
 

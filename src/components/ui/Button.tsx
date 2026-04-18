@@ -4,7 +4,7 @@ type ButtonType = "button" | "submit" | "reset";
 
 type ButtonProps = {
   label: ReactNode;
-  variant: "primary" | "secondary";
+  variant: "primary" | "secondary" | "text";
   type?: ButtonType;
   icon?: ReactNode;
   width?: string;
@@ -29,10 +29,11 @@ export function Button({
     text-body-1
     rounded-[999px]
     hover:cursor-pointer
+    px-[40px] py-[12px]
     flex
     items-center justify-center
+    whitespace-nowrap
   `;
-
   const variantClassName =
     variant === "primary"
       ? `
@@ -40,11 +41,22 @@ export function Button({
         hover:bg-brown-400
         active:bg-brown-500
       `
-      : `
+      : variant === "secondary"
+      ? `
         bg-white
         border border-brown-400
         hover:text-brown-400
         active:text-brown-500
+      `
+      : `
+        bg-transparent
+        border-none
+        underline
+        px-0 py-0
+        h-auto
+        text-brown-500
+        hover:text-brown-400
+        active:text-brown-600
       `;
 
   const disabledClassName = `

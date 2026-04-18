@@ -8,7 +8,9 @@ interface ProtectedRouteProps {
   isLoading: boolean | null;
   isAuthenticated: boolean;
   userRole: string | null;
-  requiredRole: string;
+  requiredRole?: string;
+  allowedRoles?: string[];
+  redirectTo?: string;
   children: ReactNode;
 }
 
@@ -19,9 +21,11 @@ function ProtectedRoute({
   isAuthenticated,
   userRole,
   requiredRole,
+  allowedRoles,
+  redirectTo = "/login",
   children,
 }: ProtectedRouteProps) {
-  if (isLoading === null || isLoading) {
+  if (isLoading === null || (isLoading && !isAuthenticated)) {
     return (
       <div className="flex flex-col min-h-screen">
         <div className="min-h-screen md:p-8">
@@ -31,8 +35,14 @@ function ProtectedRoute({
     );
   }
 
-  if (!isAuthenticated || userRole !== requiredRole) {
-    return <Navigate to="/login" replace />;
+  const normalizedAllowedRoles = allowedRoles ?? (requiredRole ? [requiredRole] : []);
+  const hasRoleAccess =
+    normalizedAllowedRoles.length === 0
+      ? true
+      : normalizedAllowedRoles.includes(userRole ?? "");
+
+  if (!isAuthenticated || !hasRoleAccess) {
+    return <Navigate to={redirectTo} replace />;
   }
 
   return <>{children}</>;

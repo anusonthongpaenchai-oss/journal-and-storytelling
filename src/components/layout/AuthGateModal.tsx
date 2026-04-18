@@ -5,11 +5,26 @@ import { useNavigate } from "react-router-dom";
 
 type AuthGateModalProps = {
   onClose: () => void;
+  title?: string;
+  description?: string;
+  primaryLabel?: string;
+  secondaryLabel?: string;
+  onPrimaryClick?: () => void;
+  isPrimaryLoading?: boolean;
 };
 
-export function AuthGateModal({ onClose }: AuthGateModalProps) {
+export function AuthGateModal({
+  onClose,
+  title,
+  description,
+  primaryLabel,
+  secondaryLabel,
+  onPrimaryClick,
+  isPrimaryLoading = false,
+}: AuthGateModalProps) {
 
   const navigate = useNavigate()
+  const isConfirmMode = Boolean(title && description && primaryLabel && secondaryLabel && onPrimaryClick);
 
   return (
     <div
@@ -54,31 +69,62 @@ export function AuthGateModal({ onClose }: AuthGateModalProps) {
             md:gap-[40px]
           "
         >
-          <h2
-            className="
-              text-headline-3 lg:text-headline-2
-              text-brown-600
-            "
-          >
-            Create an account to continue
-          </h2>
+          {isConfirmMode ? (
+            <>
+              <h2 className="text-headline-3 lg:text-headline-2 text-brown-600">
+                {title}
+              </h2>
 
-          <Button
-            label="Create account"
-            variant="primary"
-            width="w-[207px]"
-            onClick={() => navigate('/signup')}
-          />
+              <p className="text-body-1 text-brown-400">
+                {description}
+              </p>
 
-          <p className="flex gap-[12px] text-body-1 text-brown-400">
-            <span>Already have an account?</span>
-            <Link
-              to='/login'
-              className="underline text-brown-600"
-            >
-              Log in
-            </Link>
-          </p>
+              <div className="flex w-full justify-center gap-[12px]">
+                <Button
+                  label={secondaryLabel}
+                  variant="secondary"
+                  width="w-[130px]"
+                  onClick={onClose}
+                  disabled={isPrimaryLoading}
+                />
+                <Button
+                  label={isPrimaryLoading ? "Deleting..." : primaryLabel}
+                  variant="primary"
+                  width="w-[130px]"
+                  onClick={onPrimaryClick}
+                  disabled={isPrimaryLoading}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <h2
+                className="
+                  text-headline-3 lg:text-headline-2
+                  text-brown-600
+                "
+              >
+                Create an account to continue
+              </h2>
+
+              <Button
+                label="Create account"
+                variant="primary"
+                width="w-[207px]"
+                onClick={() => navigate('/signup')}
+              />
+
+              <p className="flex gap-[12px] text-body-1 text-brown-400">
+                <span>Already have an account?</span>
+                <Link
+                  to='/login'
+                  className="underline text-brown-600"
+                >
+                  Log in
+                </Link>
+              </p>
+            </>
+          )}
         </div>
       </section>
     </div>
