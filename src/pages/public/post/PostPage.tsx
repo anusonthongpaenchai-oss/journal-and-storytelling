@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthenticationContext";
 // Page component
 // Responsibility: compose post page layout and provide post context
 function PostPage() {
-  const { isAuthenticated, state } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>

@@ -7,7 +7,7 @@ import { AllPostProvider } from "@/context/AllPostContext";
 import { useAuth } from "@/context/AuthenticationContext";
 
 function LandingPage() {
-  const { isAuthenticated, state } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
